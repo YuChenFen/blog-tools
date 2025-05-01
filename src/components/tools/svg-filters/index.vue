@@ -1,0 +1,210 @@
+<template>
+    <div class="container">
+        <div class="svg-filters-list padding-10" style="overflow-y: scroll;">
+            <feng-button v-for="svgFilter in svgFiltersList" :key="svgFilter" :text="svgFilter.name"
+                @click="addSvgFilter(svgFilter)"></feng-button>
+        </div>
+        <draggable v-model="svgFiltersContainer" item-key="dragId" :forceFallback="true" :animation="200"
+            handle="header" class="svg-filters-card-list padding-10"
+            style="border-right: 1px solid #999;overflow-y: scroll;">
+            <template #item="{ element }">
+                <div class="user-select">
+                    <feng-code-card :value="element" @red="deleteSvgFilter(element)">
+                        <template #header-title="element">
+                            <p>{{ element.value.name }}</p>
+                            <feng-tag v-model:select="element.value.use" text="" style="margin: 0 5px;">
+                                <feng-icon name="eye" style="margin-right: -6px;"></feng-icon>
+                            </feng-tag>
+                        </template>
+                        <template #main="element">
+                            <div class="svg-filters-card">
+                                <component :is="element.value.component"></component>
+                            </div>
+                        </template>
+                    </feng-code-card>
+                </div>
+            </template>
+        </draggable>
+        <div class="svg-filters-img-code padding-10">
+            <div class="svg-filters-img-code-title" style="width: 100%;overflow: hidden;">
+                <img src="./img/fill.png" style="filter: url(#filter);width: 80%;">
+                <h1 style="font-size: 5em;font-weight: 800;filter: url(#filter);">Text</h1>
+            </div>
+            <div style="flex: 1;">
+                <feng-code-card>
+                    <template #main>
+                        <div style="height: 100%;">
+                            <feng-textarea v-model:value="svgFiltersString" font-size="1.2em"
+                                placeholder=""></feng-textarea>
+                        </div>
+                    </template>
+                </feng-code-card>
+            </div>
+        </div>
+        <svg style="width: 0;height: 0;">
+            <defs v-html="getSvgFiltersHTML()">
+            </defs>
+        </svg>
+    </div>
+</template>
+
+<script setup>
+import { ref, h } from 'vue';
+import draggable from "vuedraggable";
+import { feGaussianBlurComponent, feDropShadowComponent, feMorphologyComponent, feDisplacementMapComponent, feBlendComponent, feColorMatrixComponent, feConvolveMatrixComponent, feComponentTransferComponent, feSpecularLightingComponent, feDiffuseLightingComponent, feFloodComponent, feTurbulenceComponent, feImageComponent, feTileComponent, feOffsetComponent, feCompositeComponent, feMergeComponent } from './filters-card/filters.js';
+const svgFiltersString = ref('')
+const svgFiltersList = [
+    {
+        name: 'feGaussianBlur',
+        component: feGaussianBlurComponent
+    },
+    {
+        name: 'feDropShadow',
+        component: feDropShadowComponent
+    },
+    {
+        name: 'feMorphology',
+        component: feMorphologyComponent
+    },
+    {
+        name: 'feDisplacementMap',
+        component: feDisplacementMapComponent
+    },
+    {
+        name: 'feBlend',
+        component: feBlendComponent
+    },
+    {
+        name: 'feColorMatrix',
+        component: feColorMatrixComponent
+    },
+    {
+        name: 'feConvolveMatrix',
+        component: feConvolveMatrixComponent
+    },
+    {
+        name: 'feComponentTransfer',
+        component: feComponentTransferComponent
+    },
+    {
+        name: 'feSpecularLighting',
+        component: feSpecularLightingComponent
+    },
+    {
+        name: 'feDiffuseLighting',
+        component: feDiffuseLightingComponent
+    },
+    {
+        name: 'feFlood',
+        component: feFloodComponent
+    },
+    {
+        name: 'feTurbulence',
+        component: feTurbulenceComponent
+    },
+    {
+        name: 'feImage',
+        component: feImageComponent
+    },
+    {
+        name: 'feTile',
+        component: feTileComponent
+    },
+    {
+        name: 'feOffset',
+        component: feOffsetComponent
+    },
+    {
+        name: 'feComposite',
+        component: feCompositeComponent
+    },
+    {
+        name: 'feMerge',
+        component: feMergeComponent
+    }
+]
+
+const svgFiltersContainer = ref([
+
+])
+
+function getSvgFiltersHTML() {
+    svgFiltersString.value = `<filter id="filter" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">${svgFiltersContainer.value.map(svgFilter => svgFilter.use ? svgFilter.toString() : "").join("")}</filter>`;
+    return svgFiltersString.value;
+}
+
+
+function addSvgFilter(svgFilter) {
+    let component = new svgFilter.component();
+    component.name = svgFilter.name;
+    component.use = ref(true);
+    component.dragId = ref(Number(Math.random().toString().substr(3, 10) + Date.now()).toString(36));   // 为唯一ID
+    svgFiltersContainer.value.push(component);
+}
+
+function deleteSvgFilter(svgFilter) {
+    svgFiltersContainer.value.splice(svgFiltersContainer.value.indexOf(svgFilter), 1)
+}
+</script>
+
+<style scoped>
+.container {
+    display: flex;
+    height: 100%;
+    width: 100vw;
+}
+
+.padding-10 {
+    padding: 10px;
+}
+
+.svg-filters-list {
+    flex: 0 0 195px;
+    border-right: 1px solid #999;
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+}
+
+.svg-filters-card-list {
+    flex: 1 0 380px;
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+}
+
+.svg-filters-card {
+    padding: 10px;
+    /* border-radius: 5px;
+        border: 1px solid #999;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(var(--text-color), 0.3) 0px 1px 3px -1px; */
+}
+
+.svg-filters-img-code {
+    flex: 1 0 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.svg-filters-img-code-title {
+    border: 1px solid #999;
+    display: flex;
+    gap: 50px;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px 25px 50px 25px;
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .svg-filters-list{
+        flex: 0 0 60px;
+        width: 100vw;
+        flex-direction: row;
+    }
+}
+</style>
