@@ -1,3 +1,5 @@
+@import 'dockview-vue/dist/styles/dockview.css';
+
 * {
   margin: 0;
   padding: 0;
@@ -26,6 +28,11 @@ body {
   border-radius: 10px;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
   background-color: #bababaa9;
+}
+
+/* wc-waterfall 切换动画 */
+wc-waterfall>* {
+  transition: all .3s;
 }
 
 .el-form-item__content {
