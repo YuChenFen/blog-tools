@@ -1,11 +1,15 @@
 <script>
 import Images from './Images.vue'
 import Configure from './Configure.vue'
+import Tab from './Tab.vue';
+import RightAction from './RightAction.vue';
 
 export default {
     components: {
         Images,
-        Configure
+        Configure,
+        Tab,
+        RightAction
     }
 };
 </script>
@@ -31,17 +35,20 @@ function onReady(event) {
             minimumWidth: 300
         });
         const ImagesPanel = api.addPanel({
-            id: 'Images',
+            id: '图像',
             component: 'Images',
+            tabComponent: 'Tab',
             position: {
                 direction: 'right'
-                // direction: 'below'
             }
         });
         configurePanel.group.header.hidden = true;
-        ImagesPanel.group.header.hidden = true;
+        // ImagesPanel.group.header.hidden = true;
         configurePanel.group.api.setSize({
             width: 300
+        })
+        api.onWillShowOverlay((e) => {
+            e.preventDefault();
         })
     } else {
         const configurePanel = api.addPanel({
@@ -68,7 +75,7 @@ function onReady(event) {
 
 <template>
     <div class="container">
-        <DockviewVue style="width:100%;height:100%" @ready="onReady">
+        <DockviewVue style="width:100%;height:100%" @ready="onReady" rightHeaderActionsComponent="RightAction">
         </DockviewVue>
     </div>
 </template>

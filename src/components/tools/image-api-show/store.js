@@ -9,6 +9,7 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
     const links = ref([])
     let loadTimeout = null;
     let info = null;
+    const globalVariables = ref([{}])
 
     const load = () => {
         if (!info) {
@@ -62,12 +63,17 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
             if (!links[i].enable) {
                 continue;
             }
-            const url = links[i].url;
+            let url = links[i].url;
             if (!url) {
                 continue;
             }
+            // 替换变量
+            url = url.replace("{{time}}", new String(Date.now()) + generateRandomString(12));
+            for (let j = 0; j < globalVariables.value.length; j++) {
+                url = url.replace(`{{${globalVariables.value[j].key}}}`, globalVariables.value[j].value);
+            }
             if (links[i].data === "") {
-                urls.value.push(url.replace("{{time}}", new String(Date.now()) + generateRandomString(12)));
+                urls.value.push(url);
                 continue;
             }
             try {
@@ -93,6 +99,7 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
 
     function saveLinks() {
         localStorage.setItem('links', JSON.stringify(links.value))
+        localStorage.setItem('global-variables', JSON.stringify(globalVariables.value))
         ElMessage({
             message: '保存成功',
             type: 'success',
@@ -101,8 +108,10 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
 
     function initLinks() {
         links.value = []
+        globalVariables.value = []
         try {
             links.value = JSON.parse(localStorage.getItem('links')) || []
+            globalVariables.value = JSON.parse(localStorage.getItem('global-variables')) || []
         } catch (e) {
             console.log(e)
         }
@@ -113,6 +122,7 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
         concurrency,
         urls,
         links,
+        globalVariables,
         load,
         saveLinks,
         initLinks
