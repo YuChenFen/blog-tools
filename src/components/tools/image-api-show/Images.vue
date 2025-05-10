@@ -3,7 +3,7 @@
         <wc-waterfall :gap="10" :cols="cols">
             <el-image v-for="(url, index) in urls" :preview-src-list="urls" :initial-index="index"
                 :hide-on-click-modal="true" :key="index" :src="urls[index]" lazy
-                style="border-radius: 5px;min-height: 100px;">
+                style="border-radius: 5px;height: max-content;">
                 <template #placeholder>
                     <div class="loader-container">
                         <div class="loader"></div>
@@ -39,6 +39,26 @@ wc-waterfall :deep(.el-image) {
     position: absolute;
 }
 
+wc-waterfall :deep(.el-image__wrapper) {
+    height: max-content;
+}
+
+wc-waterfall :deep(.el-image:has(.loader-container)) {
+    aspect-ratio: 16 / 9;
+}
+
+wc-waterfall :deep(.el-image-viewer__img) {
+    max-width: 90% !important;
+    max-height: 90% !important;
+}
+
+:deep(.el-image-viewer__mask) {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    opacity: 1;
+}
+
 .empty {
     display: flex;
     justify-content: center;
@@ -54,9 +74,8 @@ wc-waterfall :deep(.el-image) {
     justify-content: center;
     align-items: center;
     background-color: #f5f7fa;
-    height: 100%;
     width: 100%;
-    min-height: 100px;
+    aspect-ratio: 16 / 9;
 }
 
 .loader {
@@ -87,7 +106,7 @@ wc-waterfall :deep(.el-image) {
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 100px;
+    aspect-ratio: 16 / 9;
     background: var(--el-fill-color-light);
     color: var(--el-text-color-secondary);
     font-size: 30px;
