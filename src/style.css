@@ -47,3 +47,10 @@ wc-waterfall>* {
   --el-collapse-header-bg-color: #ffffff00 !important;
   --el-collapse-content-bg-color: #ffffff00 !important;
 }
+
+.el-popover.el-popper {
+  width: max-content !important;
+  padding: 0 !important;
+  background-color: #0000 !important;
+  border: 0px !important;
+}

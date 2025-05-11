@@ -1,3 +1,7 @@
+import blackChessSrc from "./images/black-chess.png"
+import whiteChessSrc from "./images/white-chess.png"
+import { drawColor } from "./utils.js"
+
 class DataEncode {
     /**
      * 版本   | 数字模式 | 字母数字模式 | 8位字节模式 | 日本汉字模式 | 中国汉字模式
@@ -1819,6 +1823,18 @@ class Painter {
             this.ctx.stroke();
         }
     }
+    // 绘制分区
+    drawPartition() {
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                // 绘制分区
+                if (this._codeMap[i].drawColor[j]) {
+                    this.ctx.fillStyle = this._codeMap[i].drawColor[j];
+                    this.ctx.fillRect(j * this._spacing, i * this._spacing, this._spacing, this._spacing);
+                }
+            }
+        }
+    }
 
     // 添加定位
     addLocation(color) {
@@ -2126,104 +2142,8 @@ class Painter {
     }
 
     // 绘制
-    drawCode(color = "#000000", type = "rect") {
-        this.ctx.fillStyle = color;
-        for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j < this.size; j++) {
-                // 绘制分区
-                if (this._codeMap[i].drawColor[j]) {
-                    this.ctx.fillStyle = this._codeMap[i].drawColor[j];
-                    this.ctx.fillRect(j * this._spacing, i * this._spacing, this._spacing, this._spacing);
-                    this.ctx.fillStyle = color;
-                }
-                // 绘制数据
-                if (this._codeMap[i][j]) {
-                    if (type === "rect") {
-                        // 矩形
-                        this.ctx.beginPath();
-                        let delta = 0.2
-                        this.ctx.moveTo(j * this._spacing - delta, i * this._spacing - delta);
-                        this.ctx.lineTo(j * this._spacing + this._spacing + delta, i * this._spacing - delta);
-                        this.ctx.lineTo(j * this._spacing + this._spacing + delta, i * this._spacing + this._spacing + delta);
-                        this.ctx.lineTo(j * this._spacing - delta, i * this._spacing + this._spacing + delta);
-                        this.ctx.fill();
-                        this.ctx.closePath();
-                    } else if (type === "circle") {
-                        // 圆形
-                        this.ctx.beginPath();
-                        this.ctx.arc(j * this._spacing + this._spacing / 2, i * this._spacing + this._spacing / 2, this._spacing / 2, 0, 2 * Math.PI);
-                        this.ctx.fill();
-                        this.ctx.closePath();
-                    } else if (type === "diamond") {
-                        // 菱形
-                        this.ctx.beginPath();
-                        this.ctx.moveTo(j * this._spacing + this._spacing / 2, i * this._spacing);
-                        this.ctx.lineTo(j * this._spacing + this._spacing, i * this._spacing + this._spacing / 2);
-                        this.ctx.lineTo(j * this._spacing + this._spacing / 2, i * this._spacing + this._spacing);
-                        this.ctx.lineTo(j * this._spacing, i * this._spacing + this._spacing / 2);
-                        this.ctx.fill();
-                        this.ctx.closePath();
-                    } else if (type === "rounded-rectangle") {
-                        // 圆角矩形
-                        let UP = true
-                        let LEFT = true
-                        let RIGHT = true
-                        let DOWN = true
-                        if (i === 0 || this._codeMap[i - 1][j] === 0) {
-                            UP = false
-                        }
-                        if (j === 0 || this._codeMap[i][j - 1] === 0) {
-                            LEFT = false
-                        }
-                        if (j === this.size - 1 || this._codeMap[i][j + 1] === 0) {
-                            RIGHT = false
-                        }
-                        if (i === this.size - 1 || this._codeMap[i + 1][j] === 0) {
-                            DOWN = false
-                        }
-                        let map = [[0, 0], [0, 0]]
-                        if (UP) {
-                            map[0][0] = 1
-                            map[0][1] = 1
-                        }
-                        if (LEFT) {
-                            map[0][0] = 1
-                            map[1][0] = 1
-                        }
-                        if (RIGHT) {
-                            map[0][1] = 1
-                            map[1][1] = 1
-                        }
-                        if (DOWN) {
-                            map[1][0] = 1
-                            map[1][1] = 1
-                        }
-                        let startx = j * this._spacing
-                        let starty = i * this._spacing
-                        let size = this._spacing / 2
-                        let delta = 0.4 // 误差
-                        this.ctx.beginPath();
-                        this.ctx.arc(j * this._spacing + this._spacing / 2, i * this._spacing + this._spacing / 2, this._spacing / 2, 0, 2 * Math.PI);
-                        this.ctx.fill();
-                        this.ctx.closePath();
-                        for (let bi = 0; bi < 2; bi++) {
-                            for (let bj = 0; bj < 2; bj++) {
-                                if (map[bi][bj]) {
-                                    this.ctx.clearRect(startx + bj * size, starty + bi * size, size, size);
-                                    this.ctx.beginPath();
-                                    this.ctx.moveTo(startx + bj * size - delta, starty + bi * size - delta);
-                                    this.ctx.lineTo(startx + bj * size + size + delta, starty + bi * size - delta);
-                                    this.ctx.lineTo(startx + bj * size + size + delta, starty + bi * size + size + delta);
-                                    this.ctx.lineTo(startx + bj * size - delta, starty + bi * size + size + delta);
-                                    this.ctx.fill();
-                                    this.ctx.closePath();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    drawCode(color, alpha, type = "rect") {
+        draw(color, alpha, type, this.canvas, this._codeMap, this.size, this._spacing)
     }
 
     // 绘制剩余数据线
@@ -2305,5 +2225,159 @@ class Painter {
         }
     }
 }
+
+const tempCanvas = document.createElement('canvas')
+function draw(color, alpha, type, canvas, codeMap, size, spacing) {
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = "#000";
+    if (type === 'rect') {
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                if (codeMap[i][j]) {
+                    ctx.beginPath();
+                    ctx.rect(j * spacing, i * spacing, spacing + 0.3, spacing + 0.3);
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
+        }
+        drawEnd()
+    } else if (type === "circle") {
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                if (codeMap[i][j]) {
+                    // 圆形
+                    ctx.beginPath();
+                    ctx.arc(j * spacing + spacing / 2, i * spacing + spacing / 2, spacing / 2, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
+        }
+        drawEnd()
+    } else if (type === 'diamond') {
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                if (codeMap[i][j]) {
+                    // 菱形
+                    ctx.beginPath();
+                    ctx.moveTo(j * spacing + spacing / 2, i * spacing);
+                    ctx.lineTo(j * spacing + spacing, i * spacing + spacing / 2);
+                    ctx.lineTo(j * spacing + spacing / 2, i * spacing + spacing);
+                    ctx.lineTo(j * spacing, i * spacing + spacing / 2);
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
+        }
+        drawEnd()
+    } else if (type === 'rounded-rectangle') {
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                if (codeMap[i][j]) {
+                    // 圆角矩形
+                    let UP = true
+                    let LEFT = true
+                    let RIGHT = true
+                    let DOWN = true
+                    if (i === 0 || codeMap[i - 1][j] === 0) {
+                        UP = false
+                    }
+                    if (j === 0 || codeMap[i][j - 1] === 0) {
+                        LEFT = false
+                    }
+                    if (j === size - 1 || codeMap[i][j + 1] === 0) {
+                        RIGHT = false
+                    }
+                    if (i === size - 1 || codeMap[i + 1][j] === 0) {
+                        DOWN = false
+                    }
+                    let map = [[0, 0], [0, 0]]
+                    if (UP) {
+                        map[0][0] = 1
+                        map[0][1] = 1
+                    }
+                    if (LEFT) {
+                        map[0][0] = 1
+                        map[1][0] = 1
+                    }
+                    if (RIGHT) {
+                        map[0][1] = 1
+                        map[1][1] = 1
+                    }
+                    if (DOWN) {
+                        map[1][0] = 1
+                        map[1][1] = 1
+                    }
+                    let startx = j * spacing
+                    let starty = i * spacing
+                    let bSize = spacing / 2
+                    ctx.beginPath();
+                    ctx.arc(j * spacing + spacing / 2, i * spacing + spacing / 2, spacing / 2, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.closePath();
+                    for (let bi = 0; bi < 2; bi++) {
+                        for (let bj = 0; bj < 2; bj++) {
+                            if (map[bi][bj]) {
+                                // 绘制矩形
+                                ctx.beginPath();
+                                ctx.rect(startx + bSize * bj - 0.1, starty + bSize * bi - 0.1, bSize + 0.3, bSize + 0.3);
+                                ctx.fill();
+                                ctx.closePath();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        drawEnd()
+    } else if (type === 'chess') {
+        let blackChess = new Image()
+        let whiteChess = new Image()
+        blackChess.onload = () => {
+            whiteChess.onload = () => {
+                for (let i = 0; i < size; i++) {
+                    for (let j = 0; j < size; j++) {
+                        // 绘制数据
+                        if (codeMap[i][j]) {
+                            ctx.drawImage(blackChess, 0, 0, blackChess.width, blackChess.height, i * spacing, j * spacing, spacing, spacing)
+                        } else {
+                            ctx.drawImage(whiteChess, 0, 0, whiteChess.width, whiteChess.height, i * spacing, j * spacing, spacing, spacing)
+                        }
+                    }
+                }
+            }
+            whiteChess.src = whiteChessSrc
+        }
+        blackChess.src = blackChessSrc
+    }
+
+    function drawEnd() {
+        tempCanvas.width = canvas.width
+        tempCanvas.height = canvas.height
+        drawColor(color.type, color.color, tempCanvas)
+        // 绘制数据
+        let pixel = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let pixelT = tempCanvas.getContext('2d').getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+        let pixelData = pixel.data;
+        let pixelTData = pixelT.data;
+        for (let i = 0; i < pixelData.length; i += 4) {
+            // const r = pixelData[i];
+            // const g = pixelData[i + 1];
+            // const b = pixelData[i + 2];
+            pixelData[i] = pixelTData[i]
+            pixelData[i + 1] = pixelTData[i + 1]
+            pixelData[i + 2] = pixelTData[i + 2]
+            const a = pixelData[i + 3];
+
+            if (a > alpha) {
+                pixelData[i + 3] = alpha
+            }
+        }
+
+        ctx.putImageData(pixel, 0, 0);
+    }
+}
+
 
 export { Painter }

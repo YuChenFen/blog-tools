@@ -1,13 +1,14 @@
 <template>
     <div class="container">
-        <el-form label-width="auto" style="max-width: 600px;padding: 20px;height: 100vh;overflow: auto;"
+        <el-form label-width="auto" style="padding: 20px;height: 100vh;overflow: auto;"
             label-position="left">
             <el-form-item label="版本">
                 <el-input-number v-model="VERSION" :min="1" :max="40" @change="draw" controls-position="right" />
             </el-form-item>
             <el-form-item label="纠错级别">
                 <el-select v-model="errorCorrectionLevel" placeholder="请选择纠错级别" @change="changeErrorCorrectionLevel">
-                    <el-option v-for="item in errorCorrectionLevelArray" :key="item.vlaue" :label="item.label" :value="item.vlaue">
+                    <el-option v-for="item in errorCorrectionLevelArray" :key="item.vlaue" :label="item.label"
+                        :value="item.vlaue">
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -28,7 +29,15 @@
                 <el-switch v-model="showDataLine" @change="draw"></el-switch>
             </el-form-item>
             <el-form-item label="方块颜色">
-                <input type="color" @input="setRectColor"></input>
+                <div class="color-picker">
+                    <el-popover placement="bottom" :width="400" trigger="click">
+                        <template #reference>
+                            <canvas ref="colorPickerCanvas" width="80" height="30"
+                                style="border: 1px solid #999;border-radius: 5px;cursor: pointer;"></canvas>
+                        </template>
+                        <Colorpicker :change="setColor"></Colorpicker>
+                    </el-popover>
+                </div>
             </el-form-item>
             <el-form-item label="透明度">
                 <el-slider v-model="alpha" :min="0" :max="100" @change="draw"></el-slider>
@@ -81,8 +90,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
 import { Painter } from "./painter.js"
+import Colorpicker from "../../Colorpicker/index.vue"
+import { drawColor } from './utils.js';
+
+const colorPickerCanvas = ref(null);
 
 const errorCorrectionLevelArray = [
     {
@@ -118,6 +131,10 @@ const drawTypeArray = [
     {
         value: "rounded-rectangle",
         label: "圆角矩形"
+    },
+    {
+        value: "chess",
+        label: "棋子"
     }
 ]
 const canvasRef = ref(null);
@@ -174,57 +191,71 @@ function draw() {
 
     const painter = new Painter(canvas, "2d", Number(VERSION.value), errorCorrectionLevel.value, Number(maskPatternReference.value));
 
-    // 绘制网格
-    if (showGrid.value) {
-        painter.drawGrid();
-    }
     // 添加定位图案
     if (locationStep.value) {
-        painter.addLocation(showColor.value ? "#ff0000" : void 0);
+        painter.addLocation(showColor.value ? "#ff0000bb" : void 0);
     }
     // 添加对齐图案
     if (alignmentStep.value) {
-        painter.addAlignment(showColor.value ? "#00ff00" : void 0);
+        painter.addAlignment(showColor.value ? "#00ff00bb" : void 0);
     }
     // 添加时序图
     if (timelineStep.value) {
-        painter.addTimeline(showColor.value ? "#0000ff" : void 0);
+        painter.addTimeline(showColor.value ? "#0000ffbb" : void 0);
     }
     // 添加格式信息
     if (formatInfoStep.value) {
-        painter.addFormatInfo(showColor.value ? "#ffff00" : void 0);
+        painter.addFormatInfo(showColor.value ? "#ffff00bb" : void 0);
     }
     // 添加版本信息
     if (versionInfoStep.value) {
-        painter.addVersionInfo(showColor.value ? "#ff00ff" : void 0);
+        painter.addVersionInfo(showColor.value ? "#ff00ffbb" : void 0);
     }
     // 添加数据
     if (dataStep.value) {
-        painter.addData(showColor.value ? "#ff7007" : void 0, toUtf8(text.value), 0b0100);
+        painter.addData(showColor.value ? "#ff7007bb" : void 0, toUtf8(text.value), 0b0100);
     }
     // 添加掩膜
     if (maskStep.value) {
         painter.addMask();
     }
     // 绘制
-    let color_alpha = Math.floor(255 * alpha.value / 100).toString(16);
-    let color = rectColor.value + (color_alpha != "0" ? color_alpha : "00");
-    painter.drawCode(color, drawType.value);
+    let color_alpha = Math.floor(255 * alpha.value / 100);
+    let color = rectColor.value;
+    painter.drawCode(color, color_alpha, drawType.value);
     if (showDataLine.value) {
         painter.drawDataLine();
     }
+    // 绘制网格
+    if (showGrid.value) {
+        painter.drawGrid();
+    }
+    // 绘制分区
+    painter.drawPartition();
 }
 onMounted(() => {
     draw();
 });
-function setRectColor(e) {
-    rectColor.value = e.target.value;
-    draw();
+function setColor(type, color) {
+    rectColor.value = {
+        type: type,
+        color: color
+    };
+
+    nextTick(() => {
+        draw();
+    });
 }
 function changeErrorCorrectionLevel(value) {
     errorCorrectionLevel.value = value;
     draw();
 }
+
+watch(() => rectColor.value, () => {
+    nextTick(() => {
+        drawColor(rectColor.value.type, rectColor.value.color, colorPickerCanvas.value);
+    })
+})
 </script>
 
 <style scoped>
