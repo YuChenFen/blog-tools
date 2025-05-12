@@ -57,11 +57,11 @@
 
                 <div class="gradient-actions">
                     <button @click="addGradientStop" class="btn-action">
-                        + 添加色标
+                        添加色标
                     </button>
                     <button @click="removeGradientStop" class="btn-action btn-remove"
                         :disabled="gradientStops.length <= 2">
-                        - 删除色标
+                        删除色标
                     </button>
                 </div>
 
@@ -227,9 +227,9 @@ const getColorBetween = (color1, color2, ratio) => {
     const g2 = parseInt(color2.slice(3, 5), 16)
     const b2 = parseInt(color2.slice(5, 7), 16)
 
-    const r = Math.round(r1 + (r2 - r1) * ratio)
-    const g = Math.round(g1 + (g2 - g1) * ratio)
-    const b = Math.round(b1 + (b2 - b1) * ratio)
+    const r = Math.min(255, Math.max(0, Math.round(r1 + (r2 - r1) * ratio)))
+    const g = Math.min(255, Math.max(0, Math.round(g1 + (g2 - g1) * ratio)))
+    const b = Math.min(255, Math.max(0, Math.round(b1 + (b2 - b1) * ratio)))
 
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
 }
@@ -525,7 +525,6 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .angle-control {
-    margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid var(--border-color);
 }

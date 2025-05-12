@@ -11,6 +11,7 @@ const toolComponents = {
     'qr-code': defineAsyncComponent(() => import('../components/tools/qr-code/index.vue')),
     'color-contrast': defineAsyncComponent(() => import('../components/tools/color-contrast/index.vue')),
     'image-api-show': defineAsyncComponent(() => import('../components/tools/image-api-show/index.vue')),
+    'github-release-statistics': defineAsyncComponent(() => import('../components/tools/gitHub-release-statistics/index.vue')),
 }
 
 const currentToolComponent = computed(() => {

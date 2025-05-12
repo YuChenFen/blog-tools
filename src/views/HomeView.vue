@@ -28,6 +28,11 @@ const data = [
         description: '根据图片API地址浏览图片',
         path: '/tool/image-api-show'
     },
+    {
+        label: 'GitHub Release 下载分析',
+        description: 'GitHub Release 下载分析工具',
+        path: '/tool/github-release-statistics'
+    }
 ]
 const search = ref('')
 const showData = computed(() => {

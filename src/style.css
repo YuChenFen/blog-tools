@@ -30,6 +30,13 @@ body {
   background-color: #bababaa9;
 }
 
+.one-line {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* wc-waterfall 切换动画 */
 wc-waterfall>* {
   transition: all .3s;
