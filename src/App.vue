@@ -1,15 +1,20 @@
 <script setup>
 import { RouterView } from 'vue-router'
+
+// 禁用双指缩放
+document.documentElement.addEventListener('touchstart', function (event) {
+  if (event.touches.length > 1) {
+    event.preventDefault();
+  }
+}, {
+  passive: false
+});
 </script>
 
 <template>
-  <div class="container">
+  <div>
     <RouterView />
   </div>
 </template>
 
-<style scoped>
-.container {
-  min-height: 100vh;
-}
-</style>
+<style scoped></style>

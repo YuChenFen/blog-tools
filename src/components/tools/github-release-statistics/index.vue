@@ -126,7 +126,35 @@
 
 <script setup>
 import { ref, nextTick, onBeforeUnmount } from 'vue'
-import * as echarts from 'echarts'
+import * as echarts from 'echarts/core'
+// 引入柱状图图表，图表后缀都为 Chart
+import { BarChart } from 'echarts/charts';
+// 引入标题，提示框，直角坐标系，数据集，内置数据转换器组件，组件后缀都为 Component
+import {
+    TitleComponent,
+    TooltipComponent,
+    GridComponent,
+    DatasetComponent,
+    TransformComponent
+} from 'echarts/components';
+// 标签自动布局、全局过渡动画等特性
+import { LabelLayout, UniversalTransition } from 'echarts/features';
+// 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
+import { CanvasRenderer } from 'echarts/renderers';
+
+// 注册必须的组件
+echarts.use([
+    TitleComponent,
+    TooltipComponent,
+    GridComponent,
+    DatasetComponent,
+    TransformComponent,
+    BarChart,
+    LabelLayout,
+    UniversalTransition,
+    CanvasRenderer
+]);
+
 
 // 响应式数据
 const repoUrl = ref('')
@@ -213,9 +241,10 @@ const initChart = () => {
             }
         },
         grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '5%',
+            top: 50,
+            left: 10,
+            right: 10,
+            bottom: 30,
             containLabel: true
         },
         xAxis: {
@@ -473,7 +502,6 @@ h1 {
 .chart-container {
     background: white;
     border-radius: 12px;
-    padding: 1.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     border: 1px solid #d0d7de;
     margin-bottom: 2rem;
@@ -629,6 +657,10 @@ h1 {
 @media (max-width: 768px) {
     h1 {
         font-size: 2rem;
+    }
+
+    .main-chart{
+        aspect-ratio: 5 / 4;
     }
 
     .search-box {

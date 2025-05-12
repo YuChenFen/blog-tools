@@ -43,9 +43,9 @@ const showData = computed(() => {
 </script>
 
 <template>
-    <div style="min-height: 100vh;position: relative;">
+    <div>
         <header>
-            <div class="container">
+            <div>
                 <h1>工具集合</h1>
                 <!-- <p class="subtitle">雨辰枫司的小栈 | 工具集合</p> -->
 
@@ -63,7 +63,7 @@ const showData = computed(() => {
         </div>
 
         <footer>
-            <div class="container">
+            <div>
                 <p>© 2025 雨辰枫司的小栈 | 工具集合</p>
             </div>
         </footer>
@@ -76,6 +76,7 @@ header {
     padding: 1.5rem 0;
     text-align: center;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    height: 165px;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -85,6 +86,7 @@ header {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
+    min-height: calc(100vh - 285px);
 }
 
 h1 {
@@ -105,7 +107,7 @@ h1 {
 }
 
 .search-bar input {
-    width: 100%;
+    width: 90%;
     padding: 10px 16px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
@@ -131,13 +133,12 @@ h1 {
 footer {
     text-align: center;
     padding: 20px;
+    height: 60px;
     background-color: white;
-    margin-top: 50px;
+    margin-top: 30px;
     border-top: 1px solid #f1f5f9;
     color: #64748b;
     font-size: 0.85rem;
-    position: absolute;
-    bottom: 0px;
     width: 100%;
 }
 
