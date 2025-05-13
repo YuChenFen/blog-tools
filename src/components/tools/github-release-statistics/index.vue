@@ -283,16 +283,16 @@ const initChart = () => {
             data: sortedReleases.map(r => r.totalDownloads),
             itemStyle: {
                 color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                    { offset: 0, color: '#8a63d2' },
-                    { offset: 1, color: '#6a5acd' }
+                    { offset: 0, color: "#956FD4" },
+                    { offset: 1, color: "#3EACE5" },
                 ]),
                 borderRadius: [4, 4, 0, 0]
             },
             emphasis: {
                 itemStyle: {
                     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: '#9d76e3' },
-                        { offset: 1, color: '#7d6ae6' }
+                        { offset: 0, color: "#A57FE4" },
+                        { offset: 1, color: "#4EDCF5" }
                     ])
                 }
             }
@@ -366,8 +366,10 @@ onBeforeUnmount(() => {
 h1 {
     font-size: 2.5rem;
     font-weight: 700;
-    margin-bottom: 1rem;
-    background: linear-gradient(90deg, #2d2d57 0%, #6a5acd 100%);
+    max-width: 100%;
+    width: max-content;
+    margin: 0 auto 1rem auto;
+    background: linear-gradient(135deg, rgba(33, 150, 243, 1) 0%, rgba(119, 118, 207, 1) 25%, rgba(217, 76, 126, 1) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -416,7 +418,7 @@ h1 {
 .search-btn {
     padding: 0 24px;
     height: 40px;
-    background: linear-gradient(90deg, #6a5acd 0%, #8a63d2 100%);
+    background: linear-gradient(135deg, #956FD4 0%, #3EACE5 135%);
     color: white;
     border: none;
     font-size: 1rem;
@@ -426,7 +428,7 @@ h1 {
 }
 
 .search-btn:hover {
-    background: linear-gradient(90deg, #5a4ab5 0%, #7a53c2 100%);
+    background: linear-gradient(135deg, #7453aa 0%, #2784b3 135%)
 }
 
 .search-btn:disabled {
@@ -659,7 +661,7 @@ h1 {
         font-size: 2rem;
     }
 
-    .main-chart{
+    .main-chart {
         aspect-ratio: 5 / 4;
     }
 
@@ -678,6 +680,10 @@ h1 {
 
     .search-btn {
         border-radius: 0 0 8px 8px;
+    }
+
+    .release-author {
+        display: none;
     }
 }
 </style>

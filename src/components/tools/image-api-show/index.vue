@@ -2,7 +2,7 @@
 import Images from './Images.vue'
 import Configure from './Configure.vue'
 import Tab from './Tab.vue';
-import RightAction from './RightAction.vue';
+import RightAction from './RightAction/index.vue';
 
 export default {
     components: {

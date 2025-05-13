@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { generateRandomString } from './utils'
+import { generateRandomString, getUrlParams, getUrlWithParams } from './utils'
 
 export const useImageApiShowStore = defineStore('image-api-show', () => {
     const cols = ref(4)
@@ -10,6 +10,7 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
     let loadTimeout = null;
     let info = null;
     const globalVariables = ref([{}])
+    const globalParameters = ref([{}])
 
     const load = () => {
         if (!info) {
@@ -67,11 +68,32 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
             if (!url) {
                 continue;
             }
-            // 替换变量
-            url = url.replace("{{time}}", new String(Date.now()) + generateRandomString(12));
-            for (let j = 0; j < globalVariables.value.length; j++) {
-                url = url.replace(`{{${globalVariables.value[j].key}}}`, globalVariables.value[j].value);
+
+            const _url = url.split('?')[0];
+            const urlParams = getUrlParams(url);
+            const globalVariablesKV = {
+                $time: new String(Date.now()) + generateRandomString(12),
             }
+            for (let j = 0; j < globalVariables.value.length; j++) {
+                globalVariablesKV[globalVariables.value[j].key] = globalVariables.value[j].value;
+            }
+
+            // 处理全局参数/全局变量
+            for (let j = 0; j < globalParameters.value.length; j++) {
+                if (!urlParams[globalParameters.value[j].key]) {
+                    urlParams[globalParameters.value[j].key] = globalParameters.value[j].value;
+                }
+            }
+            for (let j in urlParams) {
+                if (urlParams[j].match(/{{.*}}/)) {
+                    urlParams[j] = urlParams[j].replace(/\{\{(.*)\}\}/, (match, p1) => {
+                        return globalVariablesKV[p1] || match;
+                    });
+                }
+            }
+
+            url = getUrlWithParams(_url, urlParams);
+
             if (links[i].data === "") {
                 urls.value.push(url);
                 continue;
@@ -98,8 +120,11 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
     }
 
     function saveLinks() {
+        globalParameters.value = globalParameters.value.filter(item => item.key !== '')
+        globalVariables.value = globalVariables.value.filter(item => item.key !== '')
         localStorage.setItem('links', JSON.stringify(links.value))
         localStorage.setItem('global-variables', JSON.stringify(globalVariables.value))
+        localStorage.setItem('global-parameters', JSON.stringify(globalParameters.value))
         ElMessage({
             message: '保存成功',
             type: 'success',
@@ -109,9 +134,11 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
     function initLinks() {
         links.value = []
         globalVariables.value = []
+        globalParameters.value = []
         try {
             links.value = JSON.parse(localStorage.getItem('links')) || []
             globalVariables.value = JSON.parse(localStorage.getItem('global-variables')) || []
+            globalParameters.value = JSON.parse(localStorage.getItem('global-parameters')) || []
         } catch (e) {
             console.log(e)
         }
@@ -123,6 +150,7 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
         urls,
         links,
         globalVariables,
+        globalParameters,
         load,
         saveLinks,
         initLinks

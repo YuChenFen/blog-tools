@@ -123,7 +123,7 @@ const vFocus = {
 }
 
 const imageApiShowStore = useImageApiShowStore()
-const { links, cols, concurrency } = storeToRefs(imageApiShowStore)
+const { links, cols, concurrency, globalParameters, globalVariables } = storeToRefs(imageApiShowStore)
 const { load, saveLinks } = imageApiShowStore
 const dialogFormVisible = ref(false)
 const link = ref({
@@ -212,7 +212,9 @@ const uploadLinks = () => {
         const reader = new FileReader()
         reader.onload = (e) => {
             const data = JSON.parse(e.target.result)
-            links.value = data
+            links.value = data.links
+            globalParameters.value = data.globalParameters
+            globalVariables.value = data.globalVariables
             saveLinks()
         }
         reader.readAsText(file)
@@ -220,7 +222,11 @@ const uploadLinks = () => {
     input.click()
 }
 const downloadLinks = () => {
-    const data = JSON.stringify(links.value)
+    const data = JSON.stringify({
+        links: links.value,
+        globalParameters: globalParameters.value,
+        globalVariables: globalVariables.value
+    })
     const blob = new Blob([data], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
