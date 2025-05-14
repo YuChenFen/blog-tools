@@ -1,44 +1,44 @@
 <template>
     <div class="container">
         <div class="svg-filters-list padding-10" style="overflow-y: scroll;">
-            <feng-button v-for="svgFilter in svgFiltersList" :key="svgFilter" :text="svgFilter.name"
-                @click="addSvgFilter(svgFilter)"></feng-button>
+            <s-button class="feng-btn" type="text" v-for="svgFilter in svgFiltersList" :key="svgFilter.name"
+                @click="addSvgFilter(svgFilter)">
+                <p style="color: #000;">{{ svgFilter.name }}</p>
+            </s-button>
         </div>
         <draggable v-model="svgFiltersContainer" item-key="dragId" :forceFallback="true" :animation="200"
             handle="header" class="svg-filters-card-list padding-10"
             style="border-right: 1px solid #999;overflow-y: scroll;">
             <template #item="{ element }">
                 <div class="user-select">
-                    <feng-code-card :value="element" @red="deleteSvgFilter(element)">
+                    <code-card :value="element" @red="deleteSvgFilter(element)">
                         <template #header-title="element">
                             <p>{{ element.value.name }}</p>
-                            <feng-tag v-model:select="element.value.use" text="" style="margin: 0 5px;">
-                                <feng-icon name="eye" style="margin-right: -6px;"></feng-icon>
-                            </feng-tag>
+                            <s-checkbox v-model="element.value.use" style="color: #009688" type="checkbox"></s-checkbox>
                         </template>
                         <template #main="element">
                             <div class="svg-filters-card">
                                 <component :is="element.value.component"></component>
                             </div>
                         </template>
-                    </feng-code-card>
+                    </code-card>
                 </div>
             </template>
         </draggable>
         <div class="svg-filters-img-code padding-10">
             <div class="svg-filters-img-code-title" style="width: 100%;overflow: hidden;">
-                <img src="./img/fill.png" style="filter: url(#filter);width: 80%;">
+                <img src="./img/fill.png" style="filter: url(#filter);width: min(80%, 50dvh);">
                 <h1 style="font-size: 5em;font-weight: 800;filter: url(#filter);">Text</h1>
             </div>
-            <div style="flex: 1;">
-                <feng-code-card>
+            <div style="flex: 1;overflow: scroll;">
+                <code-card>
                     <template #main>
-                        <div style="height: 100%;">
-                            <feng-textarea v-model:value="svgFiltersString" font-size="1.2em"
-                                placeholder=""></feng-textarea>
+                        <div style="height: 100%;padding: 10px;overflow: auto;">
+                            <s-text-field label="SVG滤镜" v-model="svgFiltersString" type="multiLine"
+                                style="width: 100%;"></s-text-field>
                         </div>
                     </template>
-                </feng-code-card>
+                </code-card>
             </div>
         </div>
         <svg style="width: 0;height: 0;">
@@ -49,9 +49,11 @@
 </template>
 
 <script setup>
-import { ref, h } from 'vue';
+import { ref } from 'vue';
 import draggable from "vuedraggable";
 import { feGaussianBlurComponent, feDropShadowComponent, feMorphologyComponent, feDisplacementMapComponent, feBlendComponent, feColorMatrixComponent, feConvolveMatrixComponent, feComponentTransferComponent, feSpecularLightingComponent, feDiffuseLightingComponent, feFloodComponent, feTurbulenceComponent, feImageComponent, feTileComponent, feOffsetComponent, feCompositeComponent, feMergeComponent } from './filters-card/filters.js';
+import CodeCard from "../../components/CodeCard.vue";
+
 const svgFiltersString = ref('')
 const svgFiltersList = [
     {
@@ -148,6 +150,16 @@ function deleteSvgFilter(svgFilter) {
 </script>
 
 <style scoped>
+.feng-btn {
+    border-radius: 5px;
+    background: #ffffff;
+    box-shadow: rgba(0, 0, 0, .1) 0px 2px 3px -1px, rgba(0, 0, 0, .06) 0px 2px 2px -1px;
+    color: #b0b0b0;
+    border: 1px solid rgba(0, 0, 0, .1);
+    padding: 0 15px;
+    min-width: max-content;
+}
+
 .container {
     display: flex;
     height: 100%;
@@ -190,10 +202,10 @@ function deleteSvgFilter(svgFilter) {
 .svg-filters-img-code-title {
     border: 1px solid #999;
     display: flex;
-    gap: 50px;
+    gap: 20px;
     flex-direction: column;
     align-items: center;
-    padding: 25px 25px 50px 25px;
+    padding: 25px;
 }
 
 @media screen and (max-width: 768px) {
@@ -201,7 +213,8 @@ function deleteSvgFilter(svgFilter) {
         flex-direction: column;
         gap: 10px;
     }
-    .svg-filters-list{
+
+    .svg-filters-list {
         flex: 0 0 60px;
         width: 100vw;
         flex-direction: row;

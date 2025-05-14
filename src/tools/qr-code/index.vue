@@ -92,7 +92,7 @@
 <script setup>
 import { ref, onMounted, watch, nextTick } from 'vue';
 import { Painter } from "./painter.js"
-import Colorpicker from "../../Colorpicker/index.vue"
+import Colorpicker from "../../components/Colorpicker/index.vue"
 import { drawColor } from './utils.js';
 
 const colorPickerCanvas = ref(null);

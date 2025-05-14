@@ -6,12 +6,12 @@ const route = useRoute()
 const toolName = computed(() => route.params.toolName)
 
 const toolComponents = {
-    'image-to-base64': defineAsyncComponent(() => import('../components/tools/image-and-base64/index.vue')),
-    'svg-filters': defineAsyncComponent(() => import('../components/tools/svg-filters/index.vue')),
-    'qr-code': defineAsyncComponent(() => import('../components/tools/qr-code/index.vue')),
-    'color-contrast': defineAsyncComponent(() => import('../components/tools/color-contrast/index.vue')),
-    'image-api-show': defineAsyncComponent(() => import('../components/tools/image-api-show/index.vue')),
-    'github-release-statistics': defineAsyncComponent(() => import('../components/tools/gitHub-release-statistics/index.vue')),
+    'image-to-base64': defineAsyncComponent(() => import('../tools/image-and-base64/index.vue')),
+    'svg-filters': defineAsyncComponent(() => import('../tools/svg-filters/index.vue')),
+    'qr-code': defineAsyncComponent(() => import('../tools/qr-code/index.vue')),
+    'color-contrast': defineAsyncComponent(() => import('../tools/color-contrast/index.vue')),
+    'image-api-show': defineAsyncComponent(() => import('../tools/image-api-show/index.vue')),
+    'github-release-statistics': defineAsyncComponent(() => import('../tools/gitHub-release-statistics/index.vue')),
 }
 
 const currentToolComponent = computed(() => {

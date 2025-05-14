@@ -1,5 +1,5 @@
 <script setup>
-import card from '../components/card.vue';
+import ToolCard from '../components/ToolCard.vue';
 import { ref, computed } from 'vue';
 
 const data = [
@@ -57,8 +57,8 @@ const showData = computed(() => {
 
         <div class="container">
             <div class="tools-container">
-                <card v-for="item in showData" :key="item.path" :title="item.label" :description="item.description"
-                    :path="item.path"></card>
+                <ToolCard v-for="item in showData" :key="item.path" :title="item.label" :description="item.description"
+                    :path="item.path"></ToolCard>
             </div>
         </div>
 

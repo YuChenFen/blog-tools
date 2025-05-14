@@ -10,8 +10,8 @@
                 style="width: 100%;text-align: center;font-size: 2em;font-weight: 800;position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%);">
                 请选择或者拖入图片</div>
         </div>
-        <feng-textarea v-model:value="base64Value" font-size="1.2em" placeholder="base64字符串" style="flex: 1;"
-            @change="base64Change"></feng-textarea>
+        <textarea class="base64-textarea" v-model="base64Value" @change="base64Change(base64Value)"
+            placeholder="base64字符串"></textarea>
     </div>
 </template>
 
@@ -55,5 +55,21 @@ function base64Change(base64) {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+.base64-textarea {
+    width: 100%;
+    flex: 1;
+    height: 100%;
+    border-radius: 5px;
+    font-size: 1.2em;
+    padding: 5px 10px;
+    resize: none;
+    border: 2px solid #999;
+    outline: none;
+
+    &:focus {
+        border-color: #4C616B;
+    }
 }
 </style>

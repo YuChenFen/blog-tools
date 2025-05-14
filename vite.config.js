@@ -9,7 +9,11 @@ export default defineConfig({
   plugins: [
     vue({
       template: {
-        compilerOptions: { isCustomElement: (tag) => tag.startsWith('wc-') }
+        compilerOptions: {
+          isCustomElement: (tag) => {
+            return tag.startsWith('wc-') || tag.startsWith('s-')
+          },
+        }
       }
     }),
     AutoImport({
