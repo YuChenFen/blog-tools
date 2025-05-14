@@ -1,31 +1,60 @@
 <template>
-    <div style="padding: 10px 0;width: 100%;height: 100%;overflow: auto;">
-        <el-form label-position="top" style="padding: 0 20px;">
+    <div style="padding-bottom:10px;width: 100%;height: 100%;overflow: auto;">
+        <div class="header one-line user-select-none">
+            <div>接口数据</div>
+            <div class="icons">
+                <el-popover placement="bottom">
+                    <p style="padding: 5px 10px;width: max-content;background-color: #fff;">上传配置文件</p>
+                    <template #reference>
+                        <div class="icon-item" @click="uploadLinks">
+                            <el-icon size="18px">
+                                <Upload />
+                            </el-icon>
+                        </div>
+                    </template>
+                </el-popover>
+                <el-popover placement="bottom">
+                    <p style="padding: 5px 10px;width: max-content;background-color: #fff;">下载当前配置文件</p>
+                    <template #reference>
+                        <div class="icon-item" @click="downloadLinks">
+                            <el-icon size="18px">
+                                <Download />
+                            </el-icon>
+                        </div>
+                    </template>
+                </el-popover>
+                <el-popover placement="bottom">
+                    <p style="padding: 5px 10px;width: max-content;background-color: #fff;">保存配置文件</p>
+                    <template #reference>
+                        <div class="icon-item" @click="saveLinks">
+                            <el-icon size="18px">
+                                <Notebook />
+                            </el-icon>
+                        </div>
+                    </template>
+                </el-popover>
+                <el-popover placement="bottom">
+                    <p style="padding: 5px 10px;width: max-content;background-color: #fff;">图片管理</p>
+                    <template #reference>
+                        <div class="icon-item" @click="showImageCongig = !showImageCongig">
+                            <el-icon size="18px">
+                                <Operation />
+                            </el-icon>
+                        </div>
+                    </template>
+                </el-popover>
+            </div>
+        </div>
+        <el-form v-show="showImageCongig" label-position="top"
+            style="padding: 10px 20px 0 20px;border-bottom: 1px solid #ccc;">
             <el-form-item label="列数">
                 <el-slider v-model="cols" :min="1" :max="7" />
             </el-form-item>
             <el-form-item label="并发请求数量">
                 <el-slider v-model="concurrency" :min="1" :max="10" />
             </el-form-item>
-            <div style="margin-bottom: 20px">
-                <el-button type="primary" @click="load">加载图片</el-button>
-                <el-button circle :icon="Upload" type="primary" @click="uploadLinks"></el-button>
-                <el-button circle :icon="Download" type="primary" @click="downloadLinks"></el-button>
-                <el-button circle :icon="Notebook" type="primary" @click="saveLinks"></el-button>
-            </div>
-            <!-- <div v-for="(link, index) in links" :key="index" class="link-item">
-                <div
-                    style="font-weight: 500;margin-bottom: 10px;display: flex;justify-content: space-between;align-items: center;">
-                    <p>链接地址</p>
-                    <el-button type="danger" :icon="Minus" circle @click="() => { links.splice(index, 1) }" />
-                </div>
-                <el-form-item label="API地址">
-                    <el-input v-model="link.url" placeholder="请输入API地址" />
-                </el-form-item>
-                <el-form-item label="图片地址（值 / 数组）字段名">
-                    <el-input v-model="link.data" placeholder="如:data、data.url等" />
-                </el-form-item>
-            </div> -->
+        </el-form>
+        <el-form label-position="top" style="padding: 0px 20px;">
         </el-form>
         <el-tree :data="links" :props="defaultProps" node-key="id" :default-expanded-keys="getExpandedKeys(links)"
             draggable :allow-drop="isFolder" empty-text="暂无数据" @node-click="handleNodeClick"
@@ -93,24 +122,26 @@
                 })
             }">新建</el-button>
         </div>
-        <el-dialog v-model="dialogFormVisible" title="API地址" width="80%">
-            <el-form label-position="top">
-                <el-form-item label="名称">
-                    <el-input v-model="link.label" placeholder="请输入名称" />
-                </el-form-item>
-                <el-form-item label="API地址">
-                    <el-input v-model="link.url" placeholder="请输入API地址，可添加{{time}}占位符作为随机字符串" />
-                </el-form-item>
-                <el-form-item label="图片地址（值 / 数组）字段名">
-                    <el-input v-model="link.data" placeholder="如:data、data.url等，若API为图片地址则留空" />
-                </el-form-item>
-            </el-form>
+        <el-dialog v-model="dialogFormVisible" title="API地址" width="max-content">
+            <div class="dialog-form">
+                <el-form label-position="top">
+                    <el-form-item label="名称">
+                        <el-input v-model="link.label" placeholder="请输入名称" />
+                    </el-form-item>
+                    <el-form-item label="API地址">
+                        <el-input v-model="link.url" placeholder="请输入API地址" />
+                    </el-form-item>
+                    <el-form-item label="图片地址（值 / 数组）字段名">
+                        <el-input v-model="link.data" placeholder="如:data、data.url等，若API为图片地址则留空" />
+                    </el-form-item>
+                </el-form>
+            </div>
         </el-dialog>
     </div>
 </template>
 
 <script setup>
-import { Plus, Notebook, Folder, FolderOpened, Link, Delete, FolderAdd, Edit, View, Hide, Download, Upload } from '@element-plus/icons-vue'
+import { Plus, Notebook, Folder, FolderOpened, Link, Delete, FolderAdd, Edit, View, Hide, Download, Upload, Operation } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { generateRandomString } from './utils'
 import { useImageApiShowStore } from './store'
@@ -124,7 +155,8 @@ const vFocus = {
 
 const imageApiShowStore = useImageApiShowStore()
 const { links, cols, concurrency, globalParameters, globalVariables } = storeToRefs(imageApiShowStore)
-const { load, saveLinks } = imageApiShowStore
+const { saveLinks } = imageApiShowStore
+const showImageCongig = ref(false)
 const dialogFormVisible = ref(false)
 const link = ref({
     label: "",
@@ -238,6 +270,39 @@ const downloadLinks = () => {
 </script>
 
 <style scoped>
+.header {
+    position: sticky;
+    top: 0;
+    height: 30px;
+    font-size: 14px;
+    color: rgb(96, 98, 102);
+    padding: 5px 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    & .icons {
+        display: flex;
+        gap: 5px;
+
+        & .icon-item {
+            height: 24px;
+            aspect-ratio: 1;
+            border-radius: 5px;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #9999993f;
+            }
+        }
+    }
+}
+
 .link-item {
     margin-bottom: 10px;
     border: 1px solid #ccc;
@@ -253,5 +318,15 @@ const downloadLinks = () => {
     justify-content: space-between;
     font-size: 14px;
     padding-right: 8px;
+}
+
+.dialog-form {
+    width: 60vw;
+}
+
+@media screen and (max-width: 768px) {
+    .dialog-form {
+        width: 80vw;
+    }
 }
 </style>

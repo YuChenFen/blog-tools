@@ -348,7 +348,7 @@ onBeforeUnmount(() => {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
     color: #24292f;
-    min-height: 100vh;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
 }

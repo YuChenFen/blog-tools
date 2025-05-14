@@ -29,6 +29,6 @@ const currentToolComponent = computed(() => {
 <style scoped>
 .tool-view {
     margin: 0 auto;
-    height: 100vh;
+    height: 100dvh;
 }
 </style>

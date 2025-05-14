@@ -36,6 +36,9 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.user-select-none {
+  user-select: none;
+}
 
 /* wc-waterfall 切换动画 */
 wc-waterfall>* {
@@ -56,6 +59,7 @@ wc-waterfall>* {
 }
 
 .el-popover.el-popper {
+  min-width: 0 !important;
   width: max-content !important;
   padding: 0 !important;
   background-color: #0000 !important;

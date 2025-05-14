@@ -12,7 +12,7 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
     const globalVariables = ref([{}])
     const globalParameters = ref([{}])
 
-    const load = () => {
+    const load = (callBack) => {
         if (!info) {
             info = ElMessage({
                 message: '正在加载中...',
@@ -29,6 +29,7 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
                 message: '加载完成',
                 type: 'success',
             })
+            callBack && callBack();
             info.close();
             loadTimeout = null;
             info = null;

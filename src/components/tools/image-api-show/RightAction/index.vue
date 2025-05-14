@@ -1,8 +1,8 @@
 <template>
     <div class="left-action">
         <el-button color="#626aef" size="small" plain round @click="dialogFormVisible = true">环境管理</el-button>
-        <el-dialog v-model="dialogFormVisible" width="60%" :show-close="false">
-            <div style="display: flex;height: 60vh;">
+        <el-dialog v-model="dialogFormVisible" width="max-content" :show-close="false">
+            <div class="env-list">
                 <div class="left">
                     <div class="item" :class="currentTab === 'globalParameters' ? 'active' : ''"
                         @click="changeTab('globalParameters')">
@@ -56,6 +56,12 @@ function changeTab(tab) {
 </script>
 
 <style scoped>
+.env-list {
+    display: flex;
+    height: 60vh;
+    width: 60vw;
+}
+
 .left-action {
     display: flex;
     justify-content: flex-end;
@@ -124,5 +130,13 @@ function changeTab(tab) {
     justify-content: flex-start;
     gap: 10px;
     overflow-y: auto;
+}
+
+@media screen and (max-width: 768px) {
+    .env-list {
+        flex-direction: column;
+        width: 90vw;
+    }
+
 }
 </style>

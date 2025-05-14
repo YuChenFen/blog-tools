@@ -3,13 +3,15 @@ import Images from './Images.vue'
 import Configure from './Configure.vue'
 import Tab from './Tab.vue';
 import RightAction from './RightAction/index.vue';
+import LeftActions from './LeftActions.vue';
 
 export default {
     components: {
         Images,
         Configure,
         Tab,
-        RightAction
+        RightAction,
+        LeftActions
     }
 };
 </script>
@@ -32,7 +34,7 @@ function onReady(event) {
         const configurePanel = api.addPanel({
             id: 'Configure',
             component: 'Configure',
-            minimumWidth: 300
+            minimumWidth: 0
         });
         const ImagesPanel = api.addPanel({
             id: '图像',
@@ -54,19 +56,23 @@ function onReady(event) {
         const configurePanel = api.addPanel({
             id: 'Configure',
             component: 'Configure',
-            minimumHeight: 215
+            minimumHeight: 0
         });
         const ImagesPanel = api.addPanel({
-            id: 'Images',
+            id: '图像',
             component: 'Images',
+            tabComponent: 'Tab',
             position: {
                 direction: 'below'
             }
         });
         configurePanel.group.header.hidden = true;
-        ImagesPanel.group.header.hidden = true;
+        // ImagesPanel.group.header.hidden = true;
         configurePanel.group.api.setSize({
-            height: 465
+            height: 150
+        })
+        api.onWillShowOverlay((e) => {
+            e.preventDefault();
         })
     }
 }
@@ -75,7 +81,7 @@ function onReady(event) {
 
 <template>
     <div class="container">
-        <DockviewVue style="width:100%;height:100%" @ready="onReady" rightHeaderActionsComponent="RightAction">
+        <DockviewVue style="width:100%;height:100%" @ready="onReady" rightHeaderActionsComponent="RightAction" leftHeaderActionsComponent="LeftActions">
         </DockviewVue>
     </div>
 </template>
