@@ -1,4 +1,6 @@
 <template>
+    <h3>内置变量</h3>
+    <span class="tip" v-text="'系统内置的变量，可直接使用{{变量名}}作为变量'"></span>
     <el-table :data="tableData" border style="width: 100%;height: max-content;">
         <el-table-column v-for="(item, index) in header" :key="item.key">
             <template #header>
@@ -7,8 +9,7 @@
             <template #default="scope">
                 <div style="height: 20px;"></div>
                 <div class="table-item">
-                    <input class="table-input" type="text" v-model="scope.row[item.key]">
-                    <Delete v-if="index === header.length - 1" class="delete-icon" @click="deleteItem(scope.row)" />
+                    <span class="table-span">{{ scope.row[item.key] }}</span>
                 </div>
             </template>
         </el-table-column>
@@ -16,50 +17,48 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, watch } from 'vue'
-import { Delete } from '@element-plus/icons-vue'
-
-const props = defineProps({
-    header: {
-        type: Array,
-        default: () => []
+const tableData = [
+    {
+        key: '$time',
+        docs: '当前时间戳'
+    },
+    {
+        key: '$random(a,b)',
+        docs: 'a 到 b 之间的随机数'
     }
-})
-const tableData = defineModel('data')
-const emptyData = {}
-props.header.forEach(item => {
-    emptyData[item.key] = ''
-})
-tableData.value.push({ ...emptyData })
-watch(() => tableData.value, (newValue, oldValue) => {
-    const lastItem = newValue[newValue.length - 1]
-    if (lastItem) {
-        let flag = false
-        for (let i = 0; i < props.header.length; i++) {
-            if (lastItem[props.header[i].key] != '') {
-                flag = true
-            }
-        }
-        if (!flag) {
-            return
-        }
+]
+const header = [
+    {
+        title: '变量名',
+        key: 'key'
+    },
+    {
+        title: '描述',
+        key: 'docs'
     }
-    tableData.value.push({ ...emptyData })
-}, { deep: true })
-
-function deleteItem(row) {
-    const index = tableData.value.indexOf(row)
-    tableData.value.splice(index, 1)
-}
-
-onBeforeUnmount(() => {
-    tableData.value = tableData.value.filter(item => item.key !== '')
-})
-
+]
 </script>
 
 <style scoped>
-.table-input {
+h3 {
+    margin-bottom: 0.5rem;
+}
+
+& .tip {
+    padding: 8px 16px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(51, 54, 57, 0.9);
+    background-color: #F6F8FA;
+}
+
+
+.table-span {
     flex: 1;
     min-width: 0;
     height: 100%;
@@ -84,7 +83,7 @@ onBeforeUnmount(() => {
     align-items: center;
     justify-content: flex-end;
 
-    &:hover .table-input {
+    &:hover .table-span {
         background-color: #fff;
     }
 }

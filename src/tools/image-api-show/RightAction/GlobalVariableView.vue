@@ -1,6 +1,6 @@
 <template>
     <h3>全局变量</h3>
-    <span class="tip" v-text="'加入 {{变量名}} 即可调用，内置 {{$time}} 为当前时间戳加上随机数'"></span>
+    <span class="tip" v-text="'加入 {{变量名}} 即可调用，可使用内置变量'"></span>
     <TableInput v-model:data="globalVariables" :header="inputData"></TableInput>
 </template>
 

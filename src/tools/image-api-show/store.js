@@ -69,6 +69,75 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
         }
     }
 
+    function pretreatmentUrl(url) {
+        let _url = url.split('?')[0];
+        const urlParams = getUrlParams(url);
+        const globalVariablesKV = [
+            (text) => {
+                if (text.match(/{{\$time}}/)) {
+                    return text.replaceAll(/\{\{\$time\}\}/g, (match, p1) => {
+                        return new String(Date.now());
+                    });
+                }
+                return text;
+            },
+            (text) => {
+                if (text.match(/\{\{\s*\$randomInt\(\s*(-?\d+)\s*,\s*(-?\d+)\s*\)\s*\}\}/)) {
+                    return text.replaceAll(/\{\{\s*\$randomInt\(\s*(-?\d+)\s*,\s*(-?\d+)\s*\)\s*\}\}/g, (match, p1, p2) => {
+                        let a = p1, b = p2;
+                        if (a > b) {
+                            [a, b] = [b, a];
+                        }
+                        return Math.floor(Math.random() * (b - a + 1) + a);
+                    });
+                }
+                return text;
+            }
+        ]
+        for (let j = 0; j < globalVariables.value.length; j++) {
+            globalVariablesKV.push((text) => {
+                let re = new RegExp(`{{${globalVariables.value[j].key}}}`, 'g');
+                console.log(re, text);
+                if (re.test(text)) {
+                    console.log(111);
+                    return text.replaceAll(re, (match, p1) => {
+                        return globalVariables.value[j].value | match;
+                    });
+                }
+                return text;
+            })
+        }
+
+        // 处理全局参数/全局变量
+        // url处理
+        function pretreatmentText(text) {
+            for (let i = 0; i < globalVariablesKV.length; i++) {
+                text = globalVariablesKV[i](text);
+            }
+            return text;
+        }
+        _url = pretreatmentText(_url);
+        let newUrlParams = {};
+        for (let j = 0; j < globalParameters.value.length; j++) {
+            let key = globalParameters.value[j].key;
+            let value = globalParameters.value[j].value;
+            key = pretreatmentText(key);
+            value = pretreatmentText(value);
+            if (!newUrlParams[key]) {
+                newUrlParams[key] = value;
+            }
+        }
+
+        for (let j in urlParams) {
+            let key = j;
+            let value = pretreatmentText(urlParams[j]);
+            if (!newUrlParams[key]) {
+                newUrlParams[key] = value;
+            }
+        }
+        return getUrlWithParams(_url, newUrlParams);
+    }
+
     async function fetchImage(links) {
         for (let i = 0; i < links.length; i++) {
             if (links[i].hasOwnProperty('children')) {
@@ -83,30 +152,7 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
                 continue;
             }
 
-            const _url = url.split('?')[0];
-            const urlParams = getUrlParams(url);
-            const globalVariablesKV = {
-                $time: new String(Date.now()) + generateRandomString(12),
-            }
-            for (let j = 0; j < globalVariables.value.length; j++) {
-                globalVariablesKV[globalVariables.value[j].key] = globalVariables.value[j].value;
-            }
-
-            // 处理全局参数/全局变量
-            for (let j = 0; j < globalParameters.value.length; j++) {
-                if (!urlParams[globalParameters.value[j].key]) {
-                    urlParams[globalParameters.value[j].key] = globalParameters.value[j].value;
-                }
-            }
-            for (let j in urlParams) {
-                if (urlParams[j].match(/{{.*}}/)) {
-                    urlParams[j] = urlParams[j].replace(/\{\{(.*)\}\}/, (match, p1) => {
-                        return globalVariablesKV[p1] || match;
-                    });
-                }
-            }
-
-            url = getUrlWithParams(_url, urlParams);
+            url = pretreatmentUrl(url);
 
             if (links[i].data === "") {
                 urls.value.push(url);
@@ -129,30 +175,7 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
 
     async function getImageUrl(link, fetchCallback) {
         let url = link.url;
-        const _url = url.split('?')[0];
-        const urlParams = getUrlParams(url);
-        const globalVariablesKV = {
-            $time: new String(Date.now()) + generateRandomString(12),
-        }
-        for (let j = 0; j < globalVariables.value.length; j++) {
-            globalVariablesKV[globalVariables.value[j].key] = globalVariables.value[j].value;
-        }
-
-        // 处理全局参数/全局变量
-        for (let j = 0; j < globalParameters.value.length; j++) {
-            if (!urlParams[globalParameters.value[j].key]) {
-                urlParams[globalParameters.value[j].key] = globalParameters.value[j].value;
-            }
-        }
-        for (let j in urlParams) {
-            if (urlParams[j].match(/{{.*}}/)) {
-                urlParams[j] = urlParams[j].replace(/\{\{(.*)\}\}/, (match, p1) => {
-                    return globalVariablesKV[p1] || match;
-                });
-            }
-        }
-
-        url = getUrlWithParams(_url, urlParams);
+        url = pretreatmentUrl(url);
 
         if (link.data === "") {
             if (fetchCallback) {

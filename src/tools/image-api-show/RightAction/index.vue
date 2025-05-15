@@ -4,6 +4,7 @@
         <el-dialog v-model="dialogFormVisible" width="max-content" :show-close="false">
             <div class="env-list">
                 <div class="left">
+                    <div class="title">全局</div>
                     <div class="item" :class="currentTab === 'globalParameters' ? 'active' : ''"
                         @click="changeTab('globalParameters')">
                         <div class="icon" style="background-color:rgba(34, 162, 255, 0.1)">
@@ -31,10 +32,27 @@
                         </div>
                         <div>全局变量</div>
                     </div>
+                    <div style="margin-top: 20px;" class="title">内置</div>
+                    <div class="item" :class="currentTab === 'internalVariable' ? 'active' : ''"
+                        @click="changeTab('internalVariable')">
+                        <div class="icon" style="background-color:rgba(127, 197, 255, 0.2);fill:#067ced">
+                            <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                width="1em" height="1em">
+                                <path
+                                    d="M403.9 625v-35.7c57.5-31.3 83.8-94.4 78.8-189.5V396h-97.5v322.7h-60.1V354.9h157.6V293h60.1v61.9h157.6v288.9c1.2 48.8-23.8 72.5-75.1 71.3H584v-37.5h26.3c21.3 0 31.3-10.6 30-31.9V396.2h-97.6v3.8c-3.8 93.8 23.1 157 80.7 189.5v35.7c-52.5-20-89.5-50.7-110.7-92-22.4 43.7-58.7 74.3-108.8 91.8z">
+                                </path>
+                                <path
+                                    d="M805.4 217.7C727.6 139.8 622 96.1 512 96.1s-215.6 43.7-293.4 121.6c-162 162-162 424.9 0 587C296.4 882.5 402 926.3 512 926.3s215.6-43.7 293.4-121.6c162.1-162.2 162.1-425 0-587z m-38.7 548.2A359.88 359.88 0 0 1 512 871.5c-95.5 0-187.1-37.9-254.8-105.6-140.5-140.5-140.5-369 0-509.5 67.5-67.5 159.2-105.6 254.8-105.6 95.5 0 187.2 37.9 254.8 105.6 140.4 140.5 140.4 369.1-0.1 509.5z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>内置变量</div>
+                    </div>
                 </div>
                 <div class="right">
                     <GlobalParametersView v-if="currentTab === 'globalParameters'"></GlobalParametersView>
                     <GlobalVariableView v-if="currentTab === 'globalVariable'"></GlobalVariableView>
+                    <InternalVariable v-if="currentTab === 'internalVariable'"></InternalVariable>
                 </div>
             </div>
         </el-dialog>
@@ -45,6 +63,8 @@
 import { ref } from 'vue';
 import GlobalParametersView from './GlobalParametersView.vue';
 import GlobalVariableView from './GlobalVariableView.vue';
+import InternalVariable from './InternalVariable.vue';
+
 
 const currentTab = ref('globalParameters')
 const dialogFormVisible = ref(false)
@@ -86,6 +106,12 @@ function changeTab(tab) {
     padding: 20px 16px;
     border-radius: 4px 0px 0px 4px;
     background-color: #F6F8FA;
+
+    & .title {
+        font-size: 13px;
+        color: #767676;
+        margin-bottom: 5px;
+    }
 
     & .item {
         display: flex;
