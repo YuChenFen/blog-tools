@@ -2,7 +2,7 @@
     <div style="height: 100%;overflow-y: auto;padding: 10px;">
         <wc-waterfall :gap="10" :cols="cols">
             <el-image v-for="(url, index) in urls" :preview-src-list="urls" :initial-index="index"
-                :hide-on-click-modal="true" :key="index" :src="urls[index]" lazy
+                :hide-on-click-modal="true" :key="index" :src="urls[index]" :lazy="isLazy"
                 style="border-radius: 5px;height: max-content;">
                 <template #placeholder>
                     <div class="loader-container">
@@ -61,8 +61,9 @@ import { Picture } from '@element-plus/icons-vue'
 import { useImageApiShowStore } from './store';
 import { storeToRefs } from 'pinia'
 
-
 const { cols, urls } = storeToRefs(useImageApiShowStore())
+// 关闭懒加载
+const isLazy = false
 </script>
 
 <style scoped>

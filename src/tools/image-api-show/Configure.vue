@@ -122,21 +122,6 @@
                 })
             }">新建</el-button>
         </div>
-        <el-dialog v-model="dialogFormVisible" title="API地址" width="max-content">
-            <div class="dialog-form">
-                <el-form label-position="top">
-                    <el-form-item label="名称">
-                        <el-input v-model="link.label" placeholder="请输入名称" />
-                    </el-form-item>
-                    <el-form-item label="API地址">
-                        <el-input v-model="link.url" placeholder="请输入API地址" />
-                    </el-form-item>
-                    <el-form-item label="图片地址（值 / 数组）字段名">
-                        <el-input v-model="link.data" placeholder="如:data、data.url等，若API为图片地址则留空" />
-                    </el-form-item>
-                </el-form>
-            </div>
-        </el-dialog>
     </div>
 </template>
 
@@ -155,14 +140,8 @@ const vFocus = {
 
 const imageApiShowStore = useImageApiShowStore()
 const { links, cols, concurrency, globalParameters, globalVariables } = storeToRefs(imageApiShowStore)
-const { saveLinks } = imageApiShowStore
+const { saveLinks, changeLink } = imageApiShowStore
 const showImageCongig = ref(false)
-const dialogFormVisible = ref(false)
-const link = ref({
-    label: "",
-    url: "",
-    data: ""
-})
 const folderData = ref({
     label: ""
 })
@@ -174,8 +153,7 @@ const defaultProps = {
 
 const handleNodeClick = (data) => {
     if (!data.hasOwnProperty('children')) {
-        link.value = data
-        dialogFormVisible.value = true
+        changeLink(data)
     }
 }
 

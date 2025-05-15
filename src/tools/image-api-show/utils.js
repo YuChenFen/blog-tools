@@ -39,6 +39,9 @@ export function getUrlParams(url) {
 
 // 由url和get参数获取地址
 export function getUrlWithParams(url, params) {
+    if (Object.keys(params).length === 0) {
+        return url;
+    }
     if (URLSearchParams) {
         const urlParams = new URLSearchParams(params);
         return `${url}?${urlParams.toString()}`;

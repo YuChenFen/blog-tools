@@ -9,6 +9,7 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
     const links = ref([])
     let loadTimeout = null;
     let info = null;
+    let dockviewApi = null;
     const globalVariables = ref([{}])
     const globalParameters = ref([{}])
 
@@ -36,21 +37,33 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
         }, 1000);
     }
 
-    async function pushUrl(data, urlArgu, i) {
+    function pushUrl(data, urlArgu, i, isReturn = false) {
         if (i < urlArgu.length) {
             if (data instanceof Array) {
                 for (let j = 0; j < data.length; j++) {
-                    pushUrl(data[j][urlArgu[i]], urlArgu, i + 1);
+                    if (isReturn) {
+                        return pushUrl(data[j][urlArgu[i]], urlArgu, i + 1, isReturn);
+                    }
+                    pushUrl(data[j][urlArgu[i]], urlArgu, i + 1, isReturn);
                 }
             } else {
-                pushUrl(data[urlArgu[i]], urlArgu, i + 1);
+                if (isReturn) {
+                    return pushUrl(data[urlArgu[i]], urlArgu, i + 1, isReturn);
+                }
+                pushUrl(data[urlArgu[i]], urlArgu, i + 1, isReturn);
             }
         } else {
             if (data instanceof Array) {
                 for (let j = 0; j < data.length; j++) {
+                    if (isReturn) {
+                        return data[j];
+                    }
                     urls.value.push(data[j]);
                 }
             } else {
+                if (isReturn) {
+                    return data;
+                }
                 urls.value.push(data);
             }
         }
@@ -114,6 +127,62 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
         }
     }
 
+    async function getImageUrl(link, fetchCallback) {
+        let url = link.url;
+        const _url = url.split('?')[0];
+        const urlParams = getUrlParams(url);
+        const globalVariablesKV = {
+            $time: new String(Date.now()) + generateRandomString(12),
+        }
+        for (let j = 0; j < globalVariables.value.length; j++) {
+            globalVariablesKV[globalVariables.value[j].key] = globalVariables.value[j].value;
+        }
+
+        // 处理全局参数/全局变量
+        for (let j = 0; j < globalParameters.value.length; j++) {
+            if (!urlParams[globalParameters.value[j].key]) {
+                urlParams[globalParameters.value[j].key] = globalParameters.value[j].value;
+            }
+        }
+        for (let j in urlParams) {
+            if (urlParams[j].match(/{{.*}}/)) {
+                urlParams[j] = urlParams[j].replace(/\{\{(.*)\}\}/, (match, p1) => {
+                    return globalVariablesKV[p1] || match;
+                });
+            }
+        }
+
+        url = getUrlWithParams(_url, urlParams);
+
+        if (link.data === "") {
+            if (fetchCallback) {
+                fetchCallback("未填写data");
+            }
+            return url;
+        }
+        try {
+            const response = await fetch(url, { method: 'GET', redirect: 'follow' });
+            let text = await response.text();
+            if (fetchCallback) {
+                fetchCallback(text)
+            }
+            // 如果是重定向，直接将重定向地址添加到urls中
+            // if (response.redirected) {
+            //     urls.value.push(response.url);
+            //     continue;
+            // }
+            const jsonData = JSON.parse(text);
+            return pushUrl(jsonData, link.data.split("."), 0, true);
+        } catch (error) {
+            console.log(error);
+            ElMessage({
+                message: error,
+                type: 'error',
+                duration: 1000
+            })
+        }
+    }
+
     // 异步获取图片
     async function getImage() {
         const workers = Array.from({ length: concurrency.value }, () => fetchImage(links.value));
@@ -145,6 +214,31 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
         }
     }
 
+    function setDockviewApi(api) {
+        dockviewApi = api
+    }
+    function changeLink(data) {
+        const imageGroup = dockviewApi.groups[1]
+        for (let i = 0; i < imageGroup.panels.length; i++) {
+            if (imageGroup.panels[i].id === data.id) {
+                imageGroup.panels[i].focus()
+                return;
+            }
+        }
+        dockviewApi.addPanel({
+            id: data.id,
+            component: 'HttpView',
+            title: data.label,
+            position: {
+                referencePanel: '图像',
+                direction: 'within'
+            },
+            params: {
+                data
+            }
+        });
+    }
+
     return {
         cols,
         concurrency,
@@ -154,6 +248,9 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
         globalParameters,
         load,
         saveLinks,
-        initLinks
+        initLinks,
+        getImageUrl,
+        setDockviewApi,
+        changeLink
     }
 })

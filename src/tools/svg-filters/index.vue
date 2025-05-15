@@ -32,10 +32,22 @@
             </div>
             <div style="flex: 1;overflow: scroll;">
                 <code-card>
+                    <template #header-title>
+                        <s-icon class="copy-icon" @click="copyCode">
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z">
+                                </path>
+                            </svg>
+                        </s-icon>
+                    </template>
                     <template #main>
-                        <div style="height: 100%;padding: 10px;overflow: auto;">
-                            <s-text-field label="SVG滤镜" v-model="svgFiltersString" type="multiLine"
-                                style="width: 100%;"></s-text-field>
+                        <div style="height: 100%;overflow: auto;">
+                            <!--<s-text-field label="SVG滤镜" v-model="svgFiltersString" type="multiLine"
+                                style="width: 100%;"></s-text-field>-->
+                            <highlightjs style="width: 100%;height: 100%;overflow: auto;font-size: 1rem;" language="xml"
+                                :code="html(svgFiltersString)">
+                            </highlightjs>
                         </div>
                     </template>
                 </code-card>
@@ -53,6 +65,7 @@ import { ref } from 'vue';
 import draggable from "vuedraggable";
 import { feGaussianBlurComponent, feDropShadowComponent, feMorphologyComponent, feDisplacementMapComponent, feBlendComponent, feColorMatrixComponent, feConvolveMatrixComponent, feComponentTransferComponent, feSpecularLightingComponent, feDiffuseLightingComponent, feFloodComponent, feTurbulenceComponent, feImageComponent, feTileComponent, feOffsetComponent, feCompositeComponent, feMergeComponent } from './filters-card/filters.js';
 import CodeCard from "../../components/CodeCard.vue";
+import { html } from "js-beautify";
 
 const svgFiltersString = ref('')
 const svgFiltersList = [
@@ -126,9 +139,7 @@ const svgFiltersList = [
     }
 ]
 
-const svgFiltersContainer = ref([
-
-])
+const svgFiltersContainer = ref([])
 
 function getSvgFiltersHTML() {
     svgFiltersString.value = `<filter id="filter" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">${svgFiltersContainer.value.map(svgFilter => svgFilter.use ? svgFilter.toString() : "").join("")}</filter>`;
@@ -146,6 +157,50 @@ function addSvgFilter(svgFilter) {
 
 function deleteSvgFilter(svgFilter) {
     svgFiltersContainer.value.splice(svgFiltersContainer.value.indexOf(svgFilter), 1)
+}
+
+function copyCode() {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(svgFiltersString.value).then(() => {
+            ElMessage({
+                message: '复制成功',
+                type: 'success',
+                duration: 1000,
+            })
+        }).catch((e) => {
+            ElMessage({
+                message: '复制失败',
+                type: 'error',
+                duration: 1000,
+            })
+        });
+        return;
+    }
+    // 创建临时textarea元素
+    const textarea = document.createElement('textarea');
+    textarea.value = svgFiltersString.value;
+    textarea.style.position = 'fixed';  // 防止页面滚动
+    document.body.appendChild(textarea);
+    textarea.select();
+
+    try {
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        ElMessage({
+            message: '复制成功',
+            type: 'success',
+            duration: 1000,
+        })
+        return successful;
+    } catch (err) {
+        ElMessage({
+            message: '复制失败',
+            type: 'error',
+            duration: 1000,
+        })
+        document.body.removeChild(textarea);
+        return false;
+    }
 }
 </script>
 
@@ -197,6 +252,7 @@ function deleteSvgFilter(svgFilter) {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    min-width: 0;
 }
 
 .svg-filters-img-code-title {
@@ -206,6 +262,19 @@ function deleteSvgFilter(svgFilter) {
     flex-direction: column;
     align-items: center;
     padding: 25px;
+}
+
+.copy-icon {
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 5px;
+    margin-right: 5px;
+
+    &:hover {
+        background-color: #99999938;
+    }
 }
 
 @media screen and (max-width: 768px) {
@@ -219,5 +288,9 @@ function deleteSvgFilter(svgFilter) {
         width: 100vw;
         flex-direction: row;
     }
+}
+
+:deep(.hljs) {
+    height: 100%;
 }
 </style>

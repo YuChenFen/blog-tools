@@ -4,6 +4,7 @@ import Configure from './Configure.vue'
 import Tab from './Tab.vue';
 import RightAction from './RightAction/index.vue';
 import LeftActions from './LeftActions.vue';
+import HttpView from './HttpView.vue';
 
 export default {
     components: {
@@ -11,7 +12,8 @@ export default {
         Configure,
         Tab,
         RightAction,
-        LeftActions
+        LeftActions,
+        HttpView
     }
 };
 </script>
@@ -21,7 +23,7 @@ import { onMounted } from 'vue'
 import { useImageApiShowStore } from './store'
 import { DockviewVue, themeAbyss } from 'dockview-vue';
 
-const { initLinks } = useImageApiShowStore()
+const { setDockviewApi, initLinks } = useImageApiShowStore()
 themeAbyss.className = 'dockview-theme-light';
 
 
@@ -30,6 +32,7 @@ onMounted(() => {
 })
 function onReady(event) {
     const api = event.api;
+    setDockviewApi(api)
     if (window.innerWidth >= 768) {
         const configurePanel = api.addPanel({
             id: 'Configure',
@@ -81,7 +84,8 @@ function onReady(event) {
 
 <template>
     <div class="container">
-        <DockviewVue style="width:100%;height:100%" @ready="onReady" rightHeaderActionsComponent="RightAction" leftHeaderActionsComponent="LeftActions">
+        <DockviewVue style="width:100%;height:100%" @ready="onReady" rightHeaderActionsComponent="RightAction"
+            leftHeaderActionsComponent="LeftActions">
         </DockviewVue>
     </div>
 </template>

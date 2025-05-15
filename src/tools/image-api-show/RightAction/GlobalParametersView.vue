@@ -1,26 +1,11 @@
 <template>
     <h3>全局参数</h3>
-    <span class="tip"
-        v-text="'设置全局请求参数，支持使用全局变量，目前只支持GET请求，发送请求时当前项目下接口自动携带参数。'"></span>
-    <el-table :data="globalParameters" border style="width: 100%">
-        <el-table-column v-for="item in inputData" :key="item.key">
-            <template #header>
-                <el-text style="font-weight: 500;" type="info">{{ item.title }}</el-text>
-            </template>
-            <template #default="scope">
-                <div style="height: 20px;"></div>
-                <div class="table-item">
-                    <input class="table-input" type="text" v-model="scope.row[item.key]">
-                    <Delete v-if="item.key === 'docs'" class="delete-icon" @click="deleteItem(scope.row)" />
-                </div>
-            </template>
-        </el-table-column>
-    </el-table>
+    <span class="tip" v-text="'设置全局请求参数，支持使用全局变量，目前只支持GET请求，发送请求时当前项目下接口自动携带参数。'"></span>
+    <TableInput v-model:data="globalParameters" :header="inputData"></TableInput>
 </template>
 
 <script setup>
-import { watch, onBeforeUnmount } from 'vue';
-import { Delete } from '@element-plus/icons-vue';
+import TableInput from '../../../components/TableInput.vue';
 import { useImageApiShowStore } from '../store';
 import { storeToRefs } from 'pinia'
 
@@ -40,30 +25,6 @@ const inputData = [
         key: 'docs'
     }
 ]
-globalParameters.value.push({
-    key: '',
-    value: '',
-    docs: ''
-})
-watch(() => globalParameters.value, (newValue, oldValue) => {
-    const lastItem = newValue[newValue.length - 1]
-    if (lastItem && lastItem.key === '' && lastItem.value === '' && lastItem.docs === '') {
-        return  // 如果是新添加的空元素，不处理
-    }
-    globalParameters.value.push({
-        key: '',
-        value: '',
-        docs: ''
-    })
-}, { deep: true })
-function deleteItem(row) {
-    const index = globalParameters.value.indexOf(row)
-    globalParameters.value.splice(index, 1)
-}
-
-onBeforeUnmount(() => {
-    globalParameters.value = globalParameters.value.filter(item => item.key !== '')
-})
 </script>
 
 <style scoped>
@@ -84,49 +45,4 @@ h3 {
     background-color: #F6F8FA;
 }
 
-.table-input {
-    flex: 1;
-    min-width: 0;
-    height: 100%;
-    padding: 5px 10px;
-    border: none;
-    outline: none;
-    border: 1px solid rgba(0, 0, 0, 0);
-    background-color: #0000;
-
-    &:hover {
-        border: 1px solid #fa8c16;
-    }
-}
-
-.table-item {
-    position: absolute;
-    top: 0;
-    left: 1px;
-    width: calc(100% - 2px);
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-
-    &:hover .table-input {
-        background-color: #fff;
-    }
-}
-
-.delete-icon {
-    width: 1em;
-    height: 1em;
-    margin: 0 8px;
-    cursor: pointer;
-    display: none;
-
-    &:hover {
-        color: #fa8c16;
-    }
-}
-
-:deep(.el-table__row):hover .delete-icon {
-    display: block;
-}
 </style>
