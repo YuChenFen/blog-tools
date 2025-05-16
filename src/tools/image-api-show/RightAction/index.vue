@@ -3,7 +3,14 @@
         <el-button color="#626aef" size="small" plain round @click="dialogFormVisible = true">环境管理</el-button>
         <el-dialog v-model="dialogFormVisible" width="max-content" :show-close="false">
             <div class="env-list">
-                <div class="left">
+                <div>
+                    <div class="menu-action" @click="drawerLeft = '-60%'">
+                        <el-icon class="icon" size="20px" @click.stop="drawerLeft = '0'">
+                            <Menu />
+                        </el-icon>
+                    </div>
+                </div>
+                <div class="left" :style="{ left: drawerLeft }">
                     <div class="title">全局</div>
                     <div class="item" :class="currentTab === 'globalParameters' ? 'active' : ''"
                         @click="changeTab('globalParameters')">
@@ -49,7 +56,7 @@
                         <div>内置变量</div>
                     </div>
                 </div>
-                <div class="right">
+                <div class="right" @click="drawerLeft = '-60%'">
                     <GlobalParametersView v-if="currentTab === 'globalParameters'"></GlobalParametersView>
                     <GlobalVariableView v-if="currentTab === 'globalVariable'"></GlobalVariableView>
                     <InternalVariable v-if="currentTab === 'internalVariable'"></InternalVariable>
@@ -61,11 +68,12 @@
 
 <script setup>
 import { ref } from 'vue';
+import { Menu } from '@element-plus/icons-vue';
 import GlobalParametersView from './GlobalParametersView.vue';
 import GlobalVariableView from './GlobalVariableView.vue';
 import InternalVariable from './InternalVariable.vue';
 
-
+const drawerLeft = ref('-60%')
 const currentTab = ref('globalParameters')
 const dialogFormVisible = ref(false)
 
@@ -78,8 +86,10 @@ function changeTab(tab) {
 <style scoped>
 .env-list {
     display: flex;
+    position: relative;
     height: 60vh;
     width: 60vw;
+    overflow: hidden;
 }
 
 .left-action {
@@ -150,12 +160,17 @@ function changeTab(tab) {
 .right {
     padding: 20px 16px;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
     gap: 10px;
     overflow-y: auto;
+
+    & :deep(h3),
+    & :deep(.tip) {
+        margin-bottom: 10px;
+    }
+}
+
+.menu-action {
+    display: none;
 }
 
 @media screen and (max-width: 768px) {
@@ -164,5 +179,28 @@ function changeTab(tab) {
         width: 90vw;
     }
 
+    .left {
+        width: 60%;
+        height: 100%;
+        position: absolute;
+        z-index: 10;
+        transition: all 0.3s;
+    }
+
+    .right {
+        width: 100%;
+        height: calc(100% - 40px);
+    }
+
+    .menu-action {
+        height: 40px;
+        display: flex;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 10px 16px;
+
+        & .icon:hover {
+            color: #fa8c16;
+        }
+    }
 }
 </style>

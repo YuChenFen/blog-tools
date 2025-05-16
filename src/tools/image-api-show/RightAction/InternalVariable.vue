@@ -61,12 +61,13 @@ h3 {
 .table-span {
     flex: 1;
     min-width: 0;
-    height: 100%;
     padding: 5px 10px;
     border: none;
     outline: none;
     border: 1px solid rgba(0, 0, 0, 0);
     background-color: #0000;
+    overflow-x: auto;
+    white-space: nowrap;
 
     &:hover {
         border: 1px solid #fa8c16;
