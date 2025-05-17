@@ -39,4 +39,24 @@ watch(() => props.language, () => {
 :deep(.ͼ4 .cm-line) {
     font-family: fangsong;
 }
+
+:deep(span[title="Fold line"]),
+:deep(span[title="Unfold line"]) {
+    position: relative;
+    color: rgba(0, 0, 0, 0);
+}
+
+:deep(span[title="Unfold line"]::before),
+:deep(span[title="Fold line"]::before) {
+    content: '▶';
+    color: #6c6c6c;
+    position: absolute;
+    font-size: 8px;
+    top: 1px;
+    left: -1px;
+}
+
+:deep(span[title="Fold line"]::before) {
+    transform: rotate(90deg);
+}
 </style>

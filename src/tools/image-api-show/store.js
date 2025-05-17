@@ -97,9 +97,7 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
         for (let j = 0; j < globalVariables.value.length; j++) {
             globalVariablesKV.push((text) => {
                 let re = new RegExp(`{{${globalVariables.value[j].key}}}`, 'g');
-                console.log(re, text);
                 if (re.test(text)) {
-                    console.log(111);
                     return text.replaceAll(re, (match, p1) => {
                         return globalVariables.value[j].value | match;
                     });

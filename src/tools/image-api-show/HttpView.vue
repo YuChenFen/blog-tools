@@ -111,7 +111,9 @@ async function sendRequest() {
         data: data.value.data
     }, (res) => {
         if (responseLanguage.value === 'JSON') {
-            responseText.value = js(res)
+            responseText.value = js(res, {
+                "wrap_line_length": "10"
+            })
         } else {
             responseText.value = html(res)
         }
