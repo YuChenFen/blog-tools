@@ -62,7 +62,10 @@ import CodeMirrorEdit from '../../components/CodeMirrorEdit.vue'
 import { ref, useAttrs, watch } from 'vue'
 import { getUrlParams, getUrlWithParams } from './utils'
 import { useImageApiShowStore } from './store'
-import { html, js } from "js-beautify";
+import prettier from 'prettier/standalone';
+import prettierPluginBabel from 'prettier/plugins/babel';
+import prettierPluginEstree from 'prettier/plugins/estree';
+
 
 const attrs = useAttrs()
 const { getImageUrl } = useImageApiShowStore()
@@ -109,13 +112,23 @@ async function sendRequest() {
     imageUrl.value = await getImageUrl({
         url: data.value.url,
         data: data.value.data
-    }, (res) => {
-        if (responseLanguage.value === 'JSON') {
-            responseText.value = js(res, {
-                "wrap_line_length": "10"
-            })
-        } else {
-            responseText.value = html(res)
+    }, async (res) => {
+        try {
+            if (responseLanguage.value === 'JSON') {
+                responseText.value = await prettier.format(res, {
+                    parser: 'json',
+                    plugins: [prettierPluginBabel, prettierPluginEstree],
+                    tabWidth: 4
+                })
+            } else {
+                responseText.value = responseText.value = await prettier.format(res, {
+                    parser: 'babel',
+                    plugins: [prettierPluginBabel, prettierPluginEstree],
+                    tabWidth: 4
+                })
+            }
+        } catch (error) {
+            responseText.value = res
         }
     })
     if (imageUrl.value) {

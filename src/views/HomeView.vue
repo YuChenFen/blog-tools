@@ -32,6 +32,11 @@ const data = [
         label: 'GitHub Release 下载分析',
         description: 'GitHub Release 下载分析工具',
         path: '/tool/github-release-statistics'
+    },
+    {
+        label: 'PDF 翻页电子书',
+        description: 'PDF在线翻页电子书预览',
+        path: '/tool/pdf-book'
     }
 ]
 const search = ref('')

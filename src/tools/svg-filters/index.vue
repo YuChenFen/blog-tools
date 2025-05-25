@@ -46,7 +46,7 @@
                             <!--<s-text-field label="SVG滤镜" v-model="svgFiltersString" type="multiLine"
                                 style="width: 100%;"></s-text-field>-->
                             <highlightjs style="width: 100%;height: 100%;overflow: auto;font-size: 1rem;" language="xml"
-                                :code="html(svgFiltersString)">
+                                :code="svgFiltersString">
                             </highlightjs>
                         </div>
                     </template>
@@ -65,7 +65,6 @@ import { ref } from 'vue';
 import draggable from "vuedraggable";
 import { feGaussianBlurComponent, feDropShadowComponent, feMorphologyComponent, feDisplacementMapComponent, feBlendComponent, feColorMatrixComponent, feConvolveMatrixComponent, feComponentTransferComponent, feSpecularLightingComponent, feDiffuseLightingComponent, feFloodComponent, feTurbulenceComponent, feImageComponent, feTileComponent, feOffsetComponent, feCompositeComponent, feMergeComponent } from './filters-card/filters.js';
 import CodeCard from "../../components/CodeCard.vue";
-import { html } from "js-beautify";
 
 const svgFiltersString = ref('')
 const svgFiltersList = [

@@ -12,6 +12,7 @@ const toolComponents = {
     'color-contrast': defineAsyncComponent(() => import('../tools/color-contrast/index.vue')),
     'image-api-show': defineAsyncComponent(() => import('../tools/image-api-show/index.vue')),
     'github-release-statistics': defineAsyncComponent(() => import('../tools/gitHub-release-statistics/index.vue')),
+    'pdf-book': defineAsyncComponent(() => import('../tools/pdf-book/index.vue')),
 }
 
 const currentToolComponent = computed(() => {

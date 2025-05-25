@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { generateRandomString, getUrlParams, getUrlWithParams } from './utils'
+import { InternalVariableArray } from './internalVariable'
+import { getUrlParams, getUrlWithParams } from './utils'
 
 export const useImageApiShowStore = defineStore('image-api-show', () => {
     const cols = ref(4)
@@ -72,28 +73,7 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
     function pretreatmentUrl(url) {
         let _url = url.split('?')[0];
         const urlParams = getUrlParams(url);
-        const globalVariablesKV = [
-            (text) => {
-                if (text.match(/{{\$time}}/)) {
-                    return text.replaceAll(/\{\{\$time\}\}/g, (match, p1) => {
-                        return new String(Date.now());
-                    });
-                }
-                return text;
-            },
-            (text) => {
-                if (text.match(/\{\{\s*\$randomInt\(\s*(-?\d+)\s*,\s*(-?\d+)\s*\)\s*\}\}/)) {
-                    return text.replaceAll(/\{\{\s*\$randomInt\(\s*(-?\d+)\s*,\s*(-?\d+)\s*\)\s*\}\}/g, (match, p1, p2) => {
-                        let a = p1, b = p2;
-                        if (a > b) {
-                            [a, b] = [b, a];
-                        }
-                        return Math.floor(Math.random() * (b - a + 1) + a);
-                    });
-                }
-                return text;
-            }
-        ]
+        const globalVariablesKV = [...InternalVariableArray];
         for (let j = 0; j < globalVariables.value.length; j++) {
             globalVariablesKV.push((text) => {
                 let re = new RegExp(`{{${globalVariables.value[j].key}}}`, 'g');
@@ -121,7 +101,7 @@ export const useImageApiShowStore = defineStore('image-api-show', () => {
             let value = globalParameters.value[j].value;
             key = pretreatmentText(key);
             value = pretreatmentText(value);
-            if (!newUrlParams[key]) {
+            if (key && !newUrlParams[key]) {
                 newUrlParams[key] = value;
             }
         }

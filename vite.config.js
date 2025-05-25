@@ -26,6 +26,7 @@ export default defineConfig({
   // 设置打包后的根目录
   base: '/tools',
   build: {
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
         manualChunks(id) {

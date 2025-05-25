@@ -23,8 +23,12 @@ const tableData = [
         docs: '当前时间戳'
     },
     {
-        key: '$random(a,b)',
+        key: '$randomInt(a,b)',
         docs: 'a 到 b 之间的随机数'
+    },
+    {
+        key: '$randomString(length)',
+        docs: '指定 length 长度的随机字符串'
     }
 ]
 const header = [

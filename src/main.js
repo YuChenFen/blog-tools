@@ -27,3 +27,9 @@ app.use(createPinia())
 app.directive("resize-bar", resizeBar);  // 侧边栏修改
 
 app.mount('#app')
+
+ElMessage({
+    message: '欢迎使用',
+    type: 'success',
+    duration: -1,
+})
