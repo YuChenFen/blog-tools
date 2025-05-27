@@ -1,8 +1,8 @@
 <template>
     <div
         style="width: 100%;height: 100%;display: flex;flex-direction: column;align-items: center;justify-content: center;overflow: hidden;">
-        <div class="active">
-            <el-button :icon="Upload" circle size="large" @click="uploadPdf" />
+        <div v-if="pdfNumPages === 0" class="active" @click="uploadPdf">
+            <h2>点击上传PDF文件</h2>
         </div>
         <div id="flipbook"></div>
     </div>
@@ -13,8 +13,7 @@ import $ from 'jquery'
 import turn from '../../assets/js/turn.min.js'
 import * as pdfjs from 'pdfjs-dist'
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min?url'
-import { nextTick } from 'vue'
-import { Upload } from '@element-plus/icons-vue'
+import { nextTick, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 
 function isMobile() {
@@ -33,7 +32,7 @@ function isMobile() {
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker
 
-let pdfNumPages = 0
+let pdfNumPages = ref(0)
 const pageObj = {
     width: 0,
     height: 0
@@ -62,8 +61,8 @@ async function pdfInit(data) {
     const dpr = window.devicePixelRatio || 1;
     const outputScale = 2; // 额外缩放因子，可根据需要调整
 
-    pdfNumPages = pdf.numPages
-    for (let index = 0; index < pdfNumPages; index++) {
+    pdfNumPages.value = pdf.numPages
+    for (let index = 0; index < pdfNumPages.value; index++) {
         const page = await pdf.getPage(index + 1)
         const viewport = page.getViewport({ scale: 1.0 })
         const scale = Math.min(
@@ -127,16 +126,16 @@ async function changeFile(file) {
             elm.close()
 
             nextTick(() => {
-                console.log(pdfNumPages, pageObj);
                 const _isMobile = isMobile()
                 $('#flipbook').turn({
                     acceleration: true, // 是否启动硬件加速 如果为触摸设备必须为true
-                    pages: pdfNumPages, // 页码总数
+                    pages: pdfNumPages.value, // 页码总数
                     elevation: 50,
                     width: _isMobile ? pageObj.width : pageObj.width * 2,
                     height: pageObj.height,
                     gradients: true, // 是否显示翻页阴影效果
                     display: _isMobile ? 'single' : 'double', //设置单页还是双页
+                    // autoCenter: true, // 是否自动居中
                     when: {
                         first: function () {
                             ElMessage({
@@ -149,7 +148,7 @@ async function changeFile(file) {
                                 message: '已经是最后一页了',
                                 type: 'error'
                             })
-                        },
+                        }
                     }
                 });
             })
@@ -205,11 +204,18 @@ async function uploadPdf() {
 }
 
 .active {
-    position: fixed;
-    padding: 5px 10px;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 999;
+    width: calc(100dvw - 40px);
+    height: calc(100dvh - 40px);
+    border: 2px dashed rgb(96, 96, 96);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s;
+    cursor: pointer;
+
+    &:hover {
+        border-color: rgb(105, 176, 74);
+    }
 }
 </style>
