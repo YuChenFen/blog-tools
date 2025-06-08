@@ -42,8 +42,9 @@
                                     placeholder="图片地址（值 / 数组）字段名，（忽略数组）如:data、data.url等，若API为图片地址则留空">
                             </div>
                             <div style="flex: 1;">
-                                <CodeMirrorEdit v-model="responseText" :disabled="true" :language="responseLanguage">
-                                </CodeMirrorEdit>
+                                <vue-monaco-editor v-model:value="responseText" :options="{
+                                    readOnly: true
+                                }" :language="responseLanguage.toLowerCase()"/>
                             </div>
                         </div>
                     </el-tab-pane>
@@ -58,7 +59,6 @@
 
 <script setup>
 import TableInput from '../../components/TableInput.vue'
-import CodeMirrorEdit from '../../components/CodeMirrorEdit.vue'
 import { ref, useAttrs, watch } from 'vue'
 import { getUrlParams, getUrlWithParams } from './utils'
 import { useImageApiShowStore } from './store'

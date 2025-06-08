@@ -6,6 +6,10 @@ import { createPinia } from 'pinia'
 
 import resizeBar from './components/directive/resizeBar'
 
+// @guolao/vue-monaco-editor
+import { install as VueMonacoEditorPlugin } from '@guolao/vue-monaco-editor'
+import './assets/js/monaco-editor-worker'
+
 // sober.js
 import 'sober/icon'
 import 'sober/button'
@@ -20,6 +24,7 @@ import xml from 'highlight.js/lib/languages/xml';
 hljs.registerLanguage('xml', xml);
 
 const app = createApp(App)
+app.use(VueMonacoEditorPlugin)
 app.use(hljsVuePlugin)
 app.use(router)
 app.use(createPinia())
