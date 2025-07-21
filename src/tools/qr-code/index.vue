@@ -183,7 +183,7 @@ function toUtf8(str) {
 
 function draw() {
     const canvas = canvasRef.value;
-    const SIZE = canvasContainerRef.value.clientWidth / 5 * 3;
+    const SIZE = Math.floor(canvasContainerRef.value.clientWidth / 5 * 3);
     canvas.width = SIZE;
     canvas.height = SIZE;
 

@@ -37,6 +37,11 @@ const data = [
         label: 'PDF 翻页电子书',
         description: 'PDF在线翻页电子书预览',
         path: '/tool/pdf-book'
+    },
+    {
+        label: '傅里叶变换画图',
+        description: '通过傅里叶变换画 svg 图片',
+        path: '/tool/fourier'
     }
 ]
 const search = ref('')
