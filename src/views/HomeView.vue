@@ -42,6 +42,11 @@ const data = [
         label: '傅里叶变换画图',
         description: '通过傅里叶变换画 svg 图片',
         path: '/tool/fourier'
+    },
+    {
+        label: 'Boids 算法',
+        description: 'Boids 算法模拟',
+        path: '/tool/boids'
     }
 ]
 const search = ref('')

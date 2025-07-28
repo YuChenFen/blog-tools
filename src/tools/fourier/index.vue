@@ -157,7 +157,6 @@ function draw(ctx, idx = 0) {
             pp.push(p);
         });
         if (showPssine.value) {
-
             drawSolve(ctx, pp, null, pssineColors[i]);
             drawLink(ctx, { x, y }, { x: delta, y });
         }

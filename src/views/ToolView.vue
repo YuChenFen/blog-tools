@@ -14,6 +14,7 @@ const toolComponents = {
     'github-release-statistics': defineAsyncComponent(() => import('../tools/gitHub-release-statistics/index.vue')),
     'pdf-book': defineAsyncComponent(() => import('../tools/pdf-book/index.vue')),
     'fourier': defineAsyncComponent(() => import('../tools/fourier/index.vue')),
+    'boids': defineAsyncComponent(() => import('../tools/boids/index.vue')),
 }
 
 const currentToolComponent = computed(() => {
