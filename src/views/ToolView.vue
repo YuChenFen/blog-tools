@@ -15,6 +15,7 @@ const toolComponents = {
     'pdf-book': defineAsyncComponent(() => import('../tools/pdf-book/index.vue')),
     'fourier': defineAsyncComponent(() => import('../tools/fourier/index.vue')),
     'boids': defineAsyncComponent(() => import('../tools/boids/index.vue')),
+    'wgsl-editor': defineAsyncComponent(() => import('../tools/wgsl-editor/index.vue')),
 }
 
 const currentToolComponent = computed(() => {

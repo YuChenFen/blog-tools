@@ -47,6 +47,11 @@ const data = [
         label: 'Boids 算法',
         description: 'Boids 算法模拟',
         path: '/tool/boids'
+    },
+    {
+        label: "WGSL 编辑器",
+        description: '基于 webgpu 的 WGSL 编辑器',
+        path: '/tool/wgsl-editor'
     }
 ]
 const search = ref('')
