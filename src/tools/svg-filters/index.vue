@@ -27,8 +27,10 @@
         </draggable>
         <div class="svg-filters-img-code padding-10">
             <div class="svg-filters-img-code-title" style="width: 100%;overflow: hidden;">
-                <img src="./img/fill.png" style="filter: url(#filter);width: min(80%, 50dvh);">
-                <h1 style="font-size: 5em;font-weight: 800;filter: url(#filter);">Text</h1>
+                <img :src="imageSrc" style="filter: url(#filter);width: min(80%, 50dvh);" @dblclick="changeImage">
+                <h1 v-if="!isChangeText" style="font-size: 5em;font-weight: 800;user-select: none;filter: url(#filter);"
+                    @dblclick="isChangeText = true">{{ text }}</h1>
+                <input style="font-size: 5em;font-weight: 800;width: 100%;" v-if="isChangeText" type="text" v-model="text" placeholder="Text" @blur="isChangeText = false">
             </div>
             <div style="flex: 1;overflow: scroll;">
                 <code-card>
@@ -65,7 +67,11 @@ import { ref } from 'vue';
 import draggable from "vuedraggable";
 import { feGaussianBlurComponent, feDropShadowComponent, feMorphologyComponent, feDisplacementMapComponent, feBlendComponent, feColorMatrixComponent, feConvolveMatrixComponent, feComponentTransferComponent, feSpecularLightingComponent, feDiffuseLightingComponent, feFloodComponent, feTurbulenceComponent, feImageComponent, feTileComponent, feOffsetComponent, feCompositeComponent, feMergeComponent } from './filters-card/filters.js';
 import CodeCard from "../../components/CodeCard.vue";
+import { defaultImageData } from './imageData.js';
 
+const imageSrc = ref(defaultImageData)
+const text = ref('Text')
+const isChangeText = ref(false)
 const svgFiltersString = ref('')
 const svgFiltersList = [
     {
@@ -200,6 +206,21 @@ function copyCode() {
         document.body.removeChild(textarea);
         return false;
     }
+}
+
+// 更换图片
+function changeImage() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imageSrc.value = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+    fileInput.click();
 }
 </script>
 
