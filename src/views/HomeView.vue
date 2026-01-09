@@ -52,6 +52,11 @@ const data = [
         label: "WGSL 编辑器",
         description: '基于 webgpu 的 WGSL 编辑器',
         path: '/tool/wgsl-editor'
+    },
+    {
+        label: "随机点视觉错觉",
+        description: '通过改变生成的随机点播放视频',
+        path: '/tool/random-video'
     }
 ]
 const search = ref('')
