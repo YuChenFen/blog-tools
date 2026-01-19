@@ -57,6 +57,11 @@ const data = [
         label: "随机点视觉错觉",
         description: '通过改变生成的随机点播放视频',
         path: '/tool/random-video'
+    },
+    {
+        label: "全景图预览",
+        description: "上传全景图，预览效果",
+        path: '/tool/panorama-preview'
     }
 ]
 const search = ref('')

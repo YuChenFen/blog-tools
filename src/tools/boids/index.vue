@@ -15,6 +15,7 @@ const dpr = window.devicePixelRatio;
 let animationId = null;
 // 参数
 const data = {
+    hideController: false,
     separationWeight: 1.0,
     alignmentWeight: 1.0,
     cohesionWeight: 1.0
@@ -22,6 +23,16 @@ const data = {
 
 // 参数调节
 const gui = new GUI({ title: '参数调节' });
+gui.add(data, 'hideController').name('隐藏控制器').onChange(function (value) {
+    const lilRoot = document.querySelector('.lil-root');
+    if (lilRoot) {
+        if (value) {
+            lilRoot.classList.add('lil-gui-hidden');
+        }else{
+            lilRoot.classList.remove('lil-gui-hidden');
+        }
+    }
+})
 gui.add(data, 'separationWeight', 0, 2).step(0.01).name('分离权重');
 gui.add(data, 'alignmentWeight', 0, 2).step(0.01).name('对齐权重');
 gui.add(data, 'cohesionWeight', 0, 2).step(0.01).name('聚集权重');

@@ -65,3 +65,12 @@ wc-waterfall>* {
   background-color: #0000 !important;
   border: 0px !important;
 }
+
+/* lil-gui 隐藏样式 */
+.lil-gui-hidden {
+  transition: opacity .3s;
+  opacity: 0 !important;
+}
+.lil-gui-hidden:hover{
+  opacity: 1 !important;
+}

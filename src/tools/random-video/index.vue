@@ -44,7 +44,7 @@ class Box {
 const dataConfig = {
     size: 10,
     reverseFlag: '黑',
-
+    hideController: false,
     async uploadVideo() {
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
@@ -244,6 +244,16 @@ class VideoProcessor {
 
 // GUI控制器
 const gui = new GUI({ title: '控制器' });
+gui.add(dataConfig, 'hideController').name('隐藏控制器').onChange(function (value) {
+    const lilRoot = document.querySelector('.lil-root');
+    if (lilRoot) {
+        if (value) {
+            lilRoot.classList.add('lil-gui-hidden');
+        }else{
+            lilRoot.classList.remove('lil-gui-hidden');
+        }
+    }
+})
 gui.add(dataConfig, 'size', 1, 20, 1)
     .name('方块大小')
     .onChange(() => {

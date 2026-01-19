@@ -17,6 +17,7 @@ const toolComponents = {
     'boids': defineAsyncComponent(() => import('../tools/boids/index.vue')),
     'wgsl-editor': defineAsyncComponent(() => import('../tools/wgsl-editor/index.vue')),
     'random-video': defineAsyncComponent(() => import('../tools/random-video/index.vue')),
+    'panorama-preview': defineAsyncComponent(() => import('../tools/panorama-preview/index.vue')),
 }
 
 const currentToolComponent = computed(() => {
