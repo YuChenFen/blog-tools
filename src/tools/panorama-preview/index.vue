@@ -174,7 +174,7 @@ function create(imageSrc) {
 
     // 鼠标滚轮事件 - 优化缩放实现，减少畸变
     // 限制FOV范围，避免过度畸变
-    renderer.domElement.addEventListener('wheel', onWheel);
+    renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
 
     // 添加窗口大小调整事件
     window.addEventListener('resize', onResize);
