@@ -18,6 +18,7 @@ const toolComponents = {
     'wgsl-editor': defineAsyncComponent(() => import('../tools/wgsl-editor/index.vue')),
     'random-video': defineAsyncComponent(() => import('../tools/random-video/index.vue')),
     'panorama-preview': defineAsyncComponent(() => import('../tools/panorama-preview/index.vue')),
+    '3d-particles':defineAsyncComponent(() => import('../tools/3d-particles/index.vue')), 
 }
 
 const currentToolComponent = computed(() => {

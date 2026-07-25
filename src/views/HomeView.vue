@@ -62,6 +62,11 @@ const data = [
         label: "全景图预览",
         description: "上传全景图，预览效果",
         path: '/tool/panorama-preview'
+    },
+    {
+        label: "粒子化展览",
+        description: "粒子效果",
+        path: '/tool/3d-particles'
     }
 ]
 const search = ref('')
