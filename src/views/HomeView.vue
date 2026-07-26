@@ -67,6 +67,11 @@ const data = [
         label: "粒子化展览",
         description: "粒子效果",
         path: '/tool/3d-particles'
+    },
+    {
+        label: "自迭代网页",
+        description: "通过 AI 生成代码迭代网页",
+        path: '/tool/ouroboros'
     }
 ]
 const search = ref('')
