@@ -49,6 +49,11 @@ const data = [
         path: '/tool/boids'
     },
     {
+        label: "约束链",
+        description: "程序化动画约束链算法模拟",
+        path: '/tool/constraint-line'
+    },
+    {
         label: "WGSL 编辑器",
         description: '基于 webgpu 的 WGSL 编辑器',
         path: '/tool/wgsl-editor'
@@ -72,7 +77,7 @@ const data = [
         label: "自迭代网页",
         description: "通过 AI 生成代码迭代网页",
         path: '/tool/ouroboros'
-    }
+    },
 ]
 const search = ref('')
 const showData = computed(() => {

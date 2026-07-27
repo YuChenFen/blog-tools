@@ -22,6 +22,7 @@
     "prettier": "^3.5.3",
     "sober": "^1.1.5",
     "three": "^0.182.0",
+    "victor": "^1.1.0",
     "vue": "^3.5.13",
     "vue-router": "^4.0.13",
     "vuedraggable": "^4.1.0",
