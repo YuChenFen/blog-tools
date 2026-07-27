@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, onBeforeUnmount, ref } from 'vue';
 import Victor from 'victor';
 import GUI from 'lil-gui';
 
@@ -92,6 +92,9 @@ onMounted(() => {
     reNodes();
     draw();
 
+})
+onBeforeUnmount(() => {
+    gui.destroy();
 })
 
 const gui = new GUI({ title: '参数调节' });
