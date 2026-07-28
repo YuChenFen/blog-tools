@@ -1,5 +1,15 @@
 <template>
-    <canvas ref="canvasRef" @mousemove="move"></canvas>
+    <canvas ref="canvasRef" @mousemove="(e) => {
+        move({
+            x: e.clientX,
+            y: e.clientY
+        })
+    }" @touchmove="(e) => {
+        move({
+            x: e.targetTouches[0].clientX,
+            y: e.targetTouches[0].clientY
+        })
+    }"></canvas>
 </template>
 
 <script setup>
@@ -80,9 +90,9 @@ function draw() {
     }
 }
 
-function move(e) {
-    nodes[0].position.x = e.clientX * dpr
-    nodes[0].position.y = e.clientY * dpr
+function move({ x, y }) {
+    nodes[0].position.x = x * dpr
+    nodes[0].position.y = y * dpr
 
     for (let i = 1; i < nodes.length; i++) {
         const newPosition = nodes[i].position.clone()
@@ -135,7 +145,7 @@ gui.add(data, 'hideController').name('隐藏控制器').onChange(function (value
 const nodeFolder = gui.addFolder('节点选项');
 nodeFolder.add(data, 'nodesLength', 1, 80).step(1).name('节点个数').onChange(reNodes);
 nodeFolder.add(data, 'nodeSize', 0, 100).step(1).name('节点大小').onChange(reNodes);
-nodeFolder.add(data, 'nodeSizeType', { 
+nodeFolder.add(data, 'nodeSizeType', {
     默认: 'default',
     蛇: 'snake'
 }).name('节点样式').onChange(reNodes);
