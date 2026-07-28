@@ -15,8 +15,30 @@ const nodes = []
 const data = {
     hideController: false,
     showNodeStroke: false,
+    showLine: true,
     nodesLength: 1,
-    nodeRadius: 50
+    nodeSize: 20,
+    nodeSizeType: 'default',
+    nodeRadius: 50,
+    nodeColor: '#000000',
+    strokeColor: '#000000',
+    lineColor: '#000000'
+}
+
+// 节点大小选项
+function nodeSizeOption(defaultSize, idx) {
+    switch (data.nodeSizeType) {
+        case 'default': return defaultSize;
+        case 'snake':
+            if (idx === 0) {
+                return defaultSize * 3 / 4;
+            } else if (idx === 1) {
+                return defaultSize * 3 / 2;
+            } else {
+                return defaultSize - (idx - 2) * (defaultSize / data.nodesLength)
+            }
+    }
+    return defaultSize;
 }
 
 class Node {
@@ -29,13 +51,13 @@ class Node {
     draw(ctx) {
         ctx.beginPath()
         ctx.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = '#000000';
+        ctx.fillStyle = data.nodeColor;
         ctx.fill();
         if (data.showNodeStroke) {
             ctx.beginPath();
             ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
             ctx.lineWidth = 1;
-            ctx.strokeStyle = '#000000';
+            ctx.strokeStyle = data.strokeColor;
             ctx.stroke();
         }
     }
@@ -43,16 +65,18 @@ class Node {
 
 function draw() {
     ctx.clearRect(0, 0, canvasRef.value.width, canvasRef.value.height);
-    nodes[0].draw(ctx);
-    for (let i = 1; i < nodes.length; i++) {
-        ctx.beginPath()
-        ctx.moveTo(nodes[i - 1].position.x, nodes[i - 1].position.y)
-        ctx.lineTo(nodes[i].position.x, nodes[i].position.y)
-        ctx.lineWidth = 4;
-        ctx.strokeStyles = '#000000';
-        ctx.lineCap = 'round';
-        ctx.stroke();
-        nodes[i].draw(ctx);
+    nodes[nodes.length - 1].draw(ctx);
+    for (let i = nodes.length - 1; i >= 1; i--) {
+        nodes[i - 1].draw(ctx);
+        if (data.showLine) {
+            ctx.beginPath()
+            ctx.moveTo(nodes[i - 1].position.x, nodes[i - 1].position.y)
+            ctx.lineTo(nodes[i].position.x, nodes[i].position.y)
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = data.lineColor;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+        }
     }
 }
 
@@ -72,11 +96,13 @@ function move(e) {
 }
 
 function reNodes() {
+    const initialPos = new Victor(window.innerWidth * dpr / 2, window.innerHeight * dpr / 2);
     nodes.length = 0;
     for (let i = 0; i < data.nodesLength; i++) {
-        const node = new Node(new Victor(100, 100), 20, data.nodeRadius);
+        const node = new Node(initialPos.clone(), nodeSizeOption(data.nodeSize, i), data.nodeRadius);
         nodes.push(node);
     }
+    draw();
 }
 
 onMounted(() => {
@@ -90,8 +116,6 @@ onMounted(() => {
     ctx = canvas.getContext('2d');
 
     reNodes();
-    draw();
-
 })
 onBeforeUnmount(() => {
     gui.destroy();
@@ -108,9 +132,21 @@ gui.add(data, 'hideController').name('隐藏控制器').onChange(function (value
         }
     }
 })
-gui.add(data, 'showNodeStroke').name('是否显示节点边框');
-gui.add(data, 'nodesLength', 1, 80).step(1).name('节点个数').onChange(reNodes);
-gui.add(data, 'nodeRadius', 20, 100).step(1).name('节点间隔').onChange(reNodes);
+const nodeFolder = gui.addFolder('节点选项');
+nodeFolder.add(data, 'nodesLength', 1, 80).step(1).name('节点个数').onChange(reNodes);
+nodeFolder.add(data, 'nodeSize', 0, 100).step(1).name('节点大小').onChange(reNodes);
+nodeFolder.add(data, 'nodeSizeType', { 
+    默认: 'default',
+    蛇: 'snake'
+}).name('节点样式').onChange(reNodes);
+nodeFolder.addColor(data, 'nodeColor').name('节点颜色').onChange(draw);
+
+const constraintFolder = gui.addFolder('约束选项');
+constraintFolder.add(data, 'showNodeStroke').name('是否显示约束边框').onChange(draw);
+constraintFolder.add(data, 'showLine').name('是否显示线条').onChange(draw);
+constraintFolder.add(data, 'nodeRadius', 10, 150).step(1).name('节点间隔').onChange(reNodes);
+constraintFolder.addColor(data, 'strokeColor').name('边框颜色').onChange(draw);
+constraintFolder.addColor(data, 'lineColor').name('线条颜色').onChange(draw);
 </script>
 
 <style lang="scss" scoped></style>
