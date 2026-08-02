@@ -1,7 +1,6 @@
 <template>
     <div id="badge-3d-body">
         <!-- 左侧控制面板 -->
-        <button id="panelToggle" class="icon-btn" title="收起 / 展开面板" aria-label="收起 / 展开面板">☰</button>
         <aside id="panel" class="panel">
             <div class="panel-header">
                 <div class="brand">
@@ -254,6 +253,7 @@
         <main id="viewport" class="viewport">
             <canvas id="canvas"></canvas>
             <div class="vp-topbar">
+                <button id="panelToggle" class="icon-btn" title="收起 / 展开面板" aria-label="收起 / 展开面板">☰</button>
                 <button id="resetCamBtn" class="ghost-btn small" title="重置视角">重置视角</button>
                 <div class="vp-status" id="vpStatus">就绪</div>
             </div>
@@ -1304,7 +1304,6 @@ onMounted(() => {
         align-items: center;
         justify-content: center;
         transition: all 0.15s;
-        margin: 10px 0 0 10px;
     }
 
     .icon-btn:hover {
