@@ -20,7 +20,8 @@ const toolComponents = {
     'random-video': defineAsyncComponent(() => import('../tools/random-video/index.vue')),
     'panorama-preview': defineAsyncComponent(() => import('../tools/panorama-preview/index.vue')),
     '3d-particles':defineAsyncComponent(() => import('../tools/3d-particles/index.vue')), 
-    'ouroboros':defineAsyncComponent(() => import('../tools/ouroboros/index.vue'))
+    'ouroboros':defineAsyncComponent(() => import('../tools/ouroboros/index.vue')),
+    'badge-3d':defineAsyncComponent(() => import('../tools/badge-3d/index.vue')),
 }
 
 const currentToolComponent = computed(() => {

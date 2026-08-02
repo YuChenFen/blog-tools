@@ -78,6 +78,11 @@ const data = [
         description: "通过 AI 生成代码迭代网页",
         path: '/tool/ouroboros'
     },
+    {
+        label: "3D徽章",
+        description: "在线 3D 徽章制作工具",
+        path: '/tool/badge-3d'
+    }
 ]
 const search = ref('')
 const showData = computed(() => {
