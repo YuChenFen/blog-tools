@@ -316,8 +316,7 @@ onMounted(() => {
         capName: '',
         capCopy: '',
         layers: [
-            { zOffset: 0.00, depthMul: 1.00, color: '#dcdcdc' },
-            { zOffset: 0.06, depthMul: 0.50, color: '#aaaaaa' }
+            { zOffset: 0.00, depthMul: 1.00, color: '#666666' }
         ]
     };
 
@@ -438,7 +437,6 @@ onMounted(() => {
         const size = state.size;
 
         // 根据是否有上传纹理调整 Bloom 效果
-        // 有纹理时降低 Bloom 强度，避免白色背景等亮色产生强烈发光
         const hasFaceTexGlobal = !!state.faceTexture;
         if (hasFaceTexGlobal) {
             bloomPass.strength = Math.min(state.bloomStrength, 0.15);
@@ -448,16 +446,59 @@ onMounted(() => {
             bloomPass.threshold = state.bloomThreshold;
         }
 
-        // 每层构建
-        state.layers.forEach((layer, idx) => {
+        // ===== 图层堆叠优化：确保几何无交叉 =====
+        // 先计算每个图层的实际深度和 bevel 偏移
+        const layerConfigs = state.layers.map((layer, idx) => {
             const layerDepth = Math.max(0.001, baseDepth * layer.depthMul);
-            const z = layer.zOffset;
+            // bevel 实际占用的 Z 空间（前后面各有 bevelThickness）
+            const bevelZ = bevel > 0.001 ? bevel * 0.8 : 0;
+            return {
+                layer,
+                layerDepth,
+                // 图层的实际 Z 范围（从底面到顶面）
+                halfDepth: layerDepth / 2 + bevelZ
+            };
+        });
+
+        // 自动堆叠模式：从最底层开始，确保上一层的底面 >= 下一层的顶面
+        // Layer 0 作为基准，使用其 zOffset 作为起点
+        const STACK_GAP = 0.0001; // 层间微小间隙，防止共面
+        const zPositions = [];
+        let currentTopZ = null;
+
+        layerConfigs.forEach((cfg, idx) => {
+            const { halfDepth, layer } = cfg;
+            let zCenter;
+
+            if (idx === 0) {
+                // 第一层使用原始 zOffset
+                zCenter = layer.zOffset + thickness * 0.5;
+                currentTopZ = zCenter + halfDepth;
+            } else {
+                // 后续层：基于上一层的顶部位置自动堆叠
+                // 如果用户设置的 zOffset 导致交叉，则使用自动堆叠位置
+                const userZ = layer.zOffset + thickness * 0.5;
+                const minZ = currentTopZ + STACK_GAP;
+                zCenter = Math.max(userZ, minZ);
+                currentTopZ = zCenter + halfDepth;
+            }
+            zPositions.push(zCenter);
+        });
+
+        // 构建每层
+        layerConfigs.forEach((cfg, idx) => {
+            const { layer, layerDepth } = cfg;
+            const z = zPositions[idx];
+
+            // 内层图层减小 bevel，减少交叉伪影
+            const isTopLayer = idx === state.layers.length - 1;
+            const layerBevel = isTopLayer ? bevel : bevel * 0.5;
 
             const geom = new THREE.ExtrudeGeometry(shapes, {
                 depth: layerDepth,
-                bevelEnabled: bevel > 0.001,
-                bevelThickness: bevel,
-                bevelSize: bevel * 0.6,
+                bevelEnabled: layerBevel > 0.001,
+                bevelThickness: layerBevel,
+                bevelSize: layerBevel * 0.6,
                 bevelSegments: 6,
                 curveSegments: 128,
                 steps: 1
@@ -465,7 +506,7 @@ onMounted(() => {
             // 居中并翻转 Y（SVG 坐标系 Y 向下）
             geom.center();
             geom.rotateX(Math.PI);
-            geom.translate(0, 0, z + thickness * 0.5);
+            geom.translate(0, 0, z);
             geom.scale(size, size, size);
 
             // 若存在上传贴图，依据几何包围盒重算 UV，使贴图贴合正面
@@ -481,21 +522,22 @@ onMounted(() => {
                 metalness: state.metalness,
                 roughness: state.roughness,
                 color: layer.color,
-                envMap: state.env === 'studio' ? envTex : null
+                envMap: state.env === 'studio' ? envTex : null,
+                polygonOffset: idx > 0  // 内层图层启用 polygonOffset 防Z-fighting
             };
 
             let mesh;
             if (hasFaceTex) {
-                // 正面/背面材质：使用 MeshBasicMaterial 直接显示贴图原色，不受光照/金属度影响
-                // 这样上传的图片能准确显示原始颜色，白色背景不会因光照而发光
                 const faceMat = new THREE.MeshBasicMaterial({
                     map: state.faceTexture,
-                    color: 0xffffff
+                    color: 0xffffff,
+                    polygonOffset: true,
+                    polygonOffsetFactor: -1,
+                    polygonOffsetUnits: -1
                 });
                 faceMat.needsUpdate = true;
                 const sideMat = buildMaterial(baseMatOpts);
                 currentMaterials.push(faceMat, sideMat);
-                // ExtrudeGeometry: materialIndex 0 = 前后面, 1 = 侧面
                 mesh = new THREE.Mesh(geom, [faceMat, sideMat]);
             } else {
                 const mat = buildMaterial(baseMatOpts);
@@ -595,7 +637,8 @@ onMounted(() => {
                     if (!shapes) throw new Error('SVG 中未找到可用路径');
                     state.customShapes = shapes;
                     // 同时渲染 SVG 为贴图，使图案内容显示在徽章正面
-                    state.faceTexture = await makeTextureFromSVG(text);
+                    // state.faceTexture = await makeTextureFromSVG(text);
+                    state.faceTexture = null;
                     document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
                     buildBadge();
                     setStatus('已加载 SVG');

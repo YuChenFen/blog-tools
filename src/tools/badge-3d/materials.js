@@ -201,12 +201,20 @@ function drawLeatherNormal(ctx, size) {
 export function buildMaterial(opts) {
   const {
     matcap, normalMap, normalScale,
-    metalness, roughness, color, envMap
+    metalness, roughness, color, envMap,
+    polygonOffset = false
   } = opts;
+
+  const matOpts = {
+    color: color ? new THREE.Color(color) : 0xffffff,
+    polygonOffset,
+    polygonOffsetFactor: polygonOffset ? -1 : 0,
+    polygonOffsetUnits: polygonOffset ? -1 : 0
+  };
 
   if (matcap) {
     const m = new THREE.MeshMatcapMaterial({
-      color: color ? new THREE.Color(color) : 0xffffff,
+      ...matOpts,
       matcap
     });
     if (normalMap) {
@@ -217,7 +225,7 @@ export function buildMaterial(opts) {
   }
 
   const m = new THREE.MeshStandardMaterial({
-    color: color ? new THREE.Color(color) : 0xffffff,
+    ...matOpts,
     metalness: Math.max(0, Math.min(1, metalness)),
     roughness: Math.max(0.02, Math.min(1, roughness)),
     envMap: envMap || null,
