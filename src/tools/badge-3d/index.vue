@@ -1029,17 +1029,44 @@ onMounted(() => {
     function makeTextureFromImage(img) {
         const maxSize = 1024;
         const w = img.width, h = img.height;
-        // 按最长边等比缩放，保持图片原始比例
-        const scale = Math.min(maxSize / w, maxSize / h);
-        const cw = Math.max(1, Math.round(w * scale));
-        const ch = Math.max(1, Math.round(h * scale));
+
+        // 1. 先绘制到临时 canvas 读取像素，裁剪透明边距
+        const tmp = document.createElement('canvas');
+        tmp.width = w; tmp.height = h;
+        const tctx = tmp.getContext('2d', { willReadFrequently: true });
+        tctx.drawImage(img, 0, 0, w, h);
+        const data = tctx.getImageData(0, 0, w, h).data;
+
+        // 2. 扫描非透明区域的最小边界
+        let minX = w, minY = h, maxX = 0, maxY = 0;
+        let found = false;
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                if (data[(y * w + x) * 4 + 3] > 0) {
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                    found = true;
+                }
+            }
+        }
+        // 无非透明像素则回退整图
+        if (!found) { minX = 0; minY = 0; maxX = w - 1; maxY = h - 1; }
+        const cropW = maxX - minX + 1;
+        const cropH = maxY - minY + 1;
+
+        // 3. 按最长边等比缩放裁剪区域
+        const scale = Math.min(maxSize / cropW, maxSize / cropH);
+        const cw = Math.max(1, Math.round(cropW * scale));
+        const ch = Math.max(1, Math.round(cropH * scale));
 
         const canvas = document.createElement('canvas');
         canvas.width = cw; canvas.height = ch;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, cw, ch);
-        // 图片完整填充画布（无透明边框）
-        ctx.drawImage(img, 0, 0, cw, ch);
+        // 从原图裁剪区域绘制到画布（无透明边框）
+        ctx.drawImage(img, minX, minY, cropW, cropH, 0, 0, cw, ch);
 
         const tex = new THREE.CanvasTexture(canvas);
         tex.colorSpace = THREE.SRGBColorSpace;
@@ -1065,12 +1092,6 @@ onMounted(() => {
             img.src = url;
         });
     }
-
-    // 调试/测试：暴露方向处理函数到全局
-    window.__badgeUtil = {
-        drawOrientedImage,
-        readExifOrientation
-    };
 
     // 依据几何体 XY 包围盒生成 [0,1] 范围的 UV，使贴图正确贴合徽章正面
     // 关键：只为 materialIndex=0（前后面）的顶点设置 UV，侧面顶点设置为安全值
